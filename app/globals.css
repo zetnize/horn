@@ -9,6 +9,7 @@
  --stroke:1px; --focus:2px; --focus-offset:3px; --radius-chip:.75rem; --radius-photo:.375rem;
  --control:2.75rem; --header:3.9375rem; --logo-width:4.875rem; --icon:1.25rem;
  --hero-ratio:390 / 486; --product-ratio:5 / 7; --card-copy:6.625rem; --motion:200ms;
+ --menu-offset:clamp(8rem,26dvh,11rem); --menu-gap:2.375rem; --cart-photo:26%; --form-title:clamp(1.25rem,5vw,1.5rem); --form-control:2.125rem; --success-top:clamp(6rem,30dvh,8rem);
 }
 @theme inline {
  --color-paper:var(--paper); --color-ink:var(--ink); --color-muted:var(--muted); --color-panel:var(--panel); --color-line:var(--line);
@@ -38,6 +39,40 @@ img,svg{display:block;max-width:100%}
 .icon-button{width:var(--control);height:var(--control);display:grid;place-items:center;padding:0;border:0;background:transparent;color:var(--ink)}
 .skip-link{position:absolute;z-index:10;top:0;padding:var(--space-3);background:var(--paper);transform:translateY(-120%)}
 .skip-link:focus{transform:none}
+.dialog.menu-dialog{width:100%;max-width:var(--shell);height:100dvh;max-height:100dvh;margin:0 auto}
+.menu-dialog .dialog-content{padding:0;min-height:100%}
+.menu-links{display:flex;flex-direction:column;align-items:center;gap:var(--menu-gap);padding:var(--menu-offset) var(--gutter) var(--space-10);font-family:var(--font-actay-wide);font-size:var(--text-md);font-weight:var(--weight-bold)}
+.menu-links a{text-decoration:none;min-height:var(--control);display:flex;align-items:center}
+.page-title{font-family:var(--font-actay-wide);font-size:var(--text-xl);font-weight:var(--weight-bold);text-align:center;padding-top:var(--space-8);padding-bottom:var(--space-8)}
+.cart-page{padding-bottom:var(--space-10)}
+.cart-list{list-style:none;margin:0;padding:0;display:grid;gap:var(--space-4)}
+.cart-item{position:relative;display:grid;grid-template-columns:var(--cart-photo) minmax(0,1fr);gap:var(--space-3);padding:var(--space-2);border:var(--stroke) solid var(--border)}
+.cart-item img{width:100%;height:auto;aspect-ratio:var(--product-ratio);object-fit:cover;border-radius:var(--radius-photo)}
+.cart-item-copy{display:flex;flex-direction:column;justify-content:space-between;gap:var(--space-3);padding-block:var(--space-2);color:var(--muted);font-size:var(--text-sm)}
+.cart-item h2{padding-right:var(--space-6);font-family:var(--font-actay-wide);font-size:var(--text-sm);font-weight:var(--weight-bold);text-transform:uppercase;color:var(--ink)}
+.cart-item h2 a{text-decoration:none}
+.cart-remove{position:absolute;top:0;right:0;color:var(--muted)}
+.cart-summary{padding-top:var(--space-8)}
+.cart-summary dl{margin:0;color:var(--muted)}
+.cart-summary dl div{display:flex;justify-content:space-between;gap:var(--space-3)}
+.cart-summary dd{margin:0;white-space:nowrap}
+.delivery-note{font-size:var(--text-xs);color:var(--muted);margin-top:var(--space-4);margin-bottom:var(--space-8)}
+.cart-summary .button{font-size:var(--text-lg)}
+.form-page{padding-bottom:var(--space-14)}
+.form-page .page-title{font-size:var(--form-title);padding-bottom:var(--space-6)}
+.form-intro{font-size:var(--text-xs);line-height:var(--leading-tight);color:var(--muted);margin-bottom:var(--space-5)}
+.form-intro p+p{margin-top:var(--space-3)}
+.field{margin-bottom:var(--space-3)}
+.field label{display:block;font-family:var(--font-actay-wide);font-size:var(--text-sm);font-weight:var(--weight-bold);margin-bottom:var(--space-2)}
+.field input,.field textarea{display:block;width:100%;min-height:var(--form-control);border:var(--stroke) solid var(--border);border-radius:0;background:var(--paper);color:var(--ink);padding:var(--space-1) var(--space-2);font-size:var(--text-md);resize:vertical}
+.field textarea{height:var(--form-control)}
+.field [aria-invalid=true]{border-color:var(--error)}
+.form-page .button{margin-top:var(--space-5)}
+.form-error{color:var(--error);font-size:var(--text-sm);margin-block:var(--space-4)}
+.success{text-align:center;padding-top:var(--success-top);padding-bottom:var(--space-16)}
+.success h1{font-family:var(--font-actay-wide);font-size:var(--text-lg);font-weight:var(--weight-bold)}
+.success p{color:var(--muted);margin-top:var(--space-5)}
+.success a{display:inline-block;color:var(--muted);margin-top:var(--space-16)}
 .breadcrumb{padding-top:var(--space-1);padding-bottom:var(--space-2);color:var(--muted)}
 .slider{position:relative}
 .slider-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}

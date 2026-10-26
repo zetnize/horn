@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
- return <html lang="ru"><body><CartProvider><div className="shell"><a className="skip-link" href="#main">К содержимому</a>{children}</div></CartProvider></body></html>;
+ return <html lang="ru" data-scroll-behavior="smooth"><body><CartProvider><div className="shell"><a className="skip-link" href="#main">К содержимому</a>{children}</div></CartProvider></body></html>;
 }
 
