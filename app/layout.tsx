@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { CartProvider } from "@/components/CartProvider";
 export const metadata: Metadata = {
  title: { default: "NORTHIA — born in the mountains", template: "%s | NORTHIA" },
  description: "NORTHIA — бренд одежды, вдохновлённый культурой и духом Кавказа. Каталог и предзаказ.",
@@ -8,6 +9,6 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
- return <html lang="ru"><body><div className="shell"><a className="skip-link" href="#main">К содержимому</a>{children}</div></body></html>;
+ return <html lang="ru"><body><CartProvider><div className="shell"><a className="skip-link" href="#main">К содержимому</a>{children}</div></CartProvider></body></html>;
 }
 
