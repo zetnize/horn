@@ -127,3 +127,12 @@
 - npm run check: lint, typecheck и build прошли.
 - Артефакты: output/font-replacements-checks.json, output/playwright/font-replacements.jpg.
 - Изменённые файлы: app/fonts.ts, app/fonts/Manrope-Regular.ttf, app/fonts/Unbounded-Bold.ttf, app/fonts/Onest-Medium.ttf, app/fonts/licenses/Manrope-OFL.txt, app/fonts/licenses/Unbounded-OFL.txt, app/fonts/licenses/Onest-OFL.txt, app/layout.tsx, app/globals.css, typography-audit.md, design-tokens.md, TODO.md, PLAN.md, README.md, QA.md.
+
+## Apps Script — 27 октября 2026
+
+- npm run lint, npm run typecheck, npm run build: успешно.
+- npm run test:unit: 3 теста прошли. Реальный submit и каталог проверены с полностью подменённым fetch, без внешних запросов: поля/secret, серверные цены и итог, JSON-подтверждения, отказ/противоречивые ответы, HTML/HTTP-ошибка, сеть/таймаут, отсутствие автоповторов, неверный URL/отсутствующая конфигурация, валидация/honeypot, отсутствие телефона в логах ошибки.
+- npm run test:api: 7 групп прошли против локальной production-сборки 127.0.0.1:3107 с отключённой интеграцией Google. Проверены товары/размеры/количество, пустые/повторные позиции, поля, JSON/размер тела, honeypot, ошибка при отсутствии настроек и rate limit 429/Retry-After.
+- Форма не изменена: успех/ошибки, синхронная блокировка повторной отправки и сохранение введённых данных уже были реализованы. Новая браузерная проверка не проводилась.
+- Реальная запись не выполнялась: отдельного безопасного тестового развёртывания нет. Точный ответ существующего скрипта и формирование даты/статуса требуют проверки на стороне Google. В документации перечислены поддерживаемые явные подтверждения записи.
+- .env.local исключён из Git; секрет не включён в исходники/документацию. Публикации/push нет.

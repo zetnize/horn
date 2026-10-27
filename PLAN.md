@@ -18,3 +18,5 @@
 8. После входа Figma Properties доступны в браузере: назначения, веса, размеры и строки сверены и перенесены в CSS; typography-audit.md — новая база типографики. Финальное подключение next/font/local заблокировано отсутствием четырёх WOFF2.
 
 9. По указанию владельца подключены локальные замены из архива: Manrope Regular → роль Actay; Unbounded Bold → роль Actay Wide; Onest Medium → роль Monochrome Sans; Arial → роль Helvetica Neue. Этап подключения шрифтов выполнен.
+
+10. Предзаказы переведены с service account на существующий Google Apps Script: серверный POST, GOOGLE_SCRIPT_URL/GOOGLE_SCRIPT_SECRET, проверка подтверждения, сохранение состава и итога в comment. Форма и интерфейс сохранены. Лист ожидания оставлен на прежнем отдельном канале; ложный успех без настройки отключён. Проверки и ограничения — TODO/README/QA.

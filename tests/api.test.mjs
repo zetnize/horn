@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+if (process.env.TEST_API_ISOLATED !== "1")
+  throw new Error("Set TEST_API_ISOLATED=1 only for a local server with Google integration disabled.");
 const base = process.env.TEST_BASE_URL ?? "http://127.0.0.1:3000";
 let sequence = 1;
 const valid = {
@@ -69,20 +71,14 @@ test("honeypot succeeds without credentials or valid customer data", async () =>
     assert.deepEqual(await response.json(), { ok: true });
   }
 });
-test("valid requests succeed in dev; production without config fails closed", async () => {
+test("valid requests without config fail closed (isolated server only)", async () => {
   for (const [route, data] of [
     ["preorder", { ...valid, price: 1, total: 1, nameOverride: "Fake" }],
     ["waitlist", { name: "Тест", contact: "@northia_test" }],
   ]) {
     const response = await post(route, data);
-    assert.equal(
-      response.status,
-      process.env.TEST_PRODUCTION === "1" ? 500 : 200,
-    );
-    assert.equal(
-      (await response.json()).ok,
-      process.env.TEST_PRODUCTION !== "1",
-    );
+    assert.equal(response.status, 500);
+    assert.equal((await response.json()).ok, false);
   }
 });
 test("rate limiter returns 429 and Retry-After on eleventh attempt", async () => {

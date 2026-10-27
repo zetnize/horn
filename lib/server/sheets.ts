@@ -16,13 +16,6 @@ export async function appendSheetRow(
   const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
   const sheetId = process.env.GOOGLE_SHEET_ID;
   if (!email || !privateKey || !sheetId) {
-    if (process.env.NODE_ENV === "development") {
-      console.info("[NORTHIA DEV: заявка не сохранена в Google Sheets]", {
-        sheet,
-        values: row.map(escapeSheetCell),
-      });
-      return;
-    }
     throw new SheetConfigurationError("missing-env");
   }
   const auth = new google.auth.JWT({

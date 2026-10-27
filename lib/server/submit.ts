@@ -7,6 +7,7 @@ import { appendSheetRow, SheetConfigurationError } from "./sheets";
 import { moscowDate, SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
+import { ScriptError, sendScriptOrder } from "./google-script";
 const MAX_BODY_BYTES = 32_768;
 class BodyError extends Error {}
 async function readBody(request: Request): Promise<unknown> {
@@ -120,18 +121,21 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
           return `${product.name} / ${item.size} / ${product.color} / ${item.qty} / ${formatPrice(product.price)}`;
         })
         .join("\n");
-      await appendSheetRow(SHEETS.preorder, [
-        moscowDate(),
-        id,
-        input.name,
-        input.phone,
-        input.contact,
-        input.city,
-        input.address,
-        input.comment,
-        items,
-        total,
-      ]);
+      await sendScriptOrder({
+        fullName: input.name,
+        phone: input.phone,
+        contact: input.contact,
+        city: input.city,
+        pickupAddress: input.address,
+        comment: [
+          input.comment,
+          `Заявка: ${id}`,
+          `Состав заказа (название / размер / цвет / количество / цена за единицу):\n${items}`,
+          `Итого: ${formatPrice(total)}`,
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+      });
       return response({ ok: true, id });
     }
     const parsed = waitlistSchema.safeParse(body);
@@ -145,7 +149,7 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
   } catch (error) {
     // Never log a Google error object: it may contain request headers and credentials.
     const reason =
-      error instanceof SheetConfigurationError
+      error instanceof SheetConfigurationError || error instanceof ScriptError
         ? error.reason
         : "google-request-failed";
     const status =
@@ -164,7 +168,9 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
       {
         ok: false,
         message:
-          error instanceof SheetConfigurationError
+          error instanceof SheetConfigurationError ||
+          (error instanceof ScriptError &&
+            ["missing-env", "invalid-url"].includes(error.reason))
             ? "Приём заявок ещё не настроен. Пожалуйста, попробуйте позже."
             : "Не удалось сохранить заявку. Пожалуйста, попробуйте ещё раз.",
       },
