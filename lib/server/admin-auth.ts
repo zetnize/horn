@@ -1,29 +1,22 @@
 import "server-only";
 import { cookies } from "next/headers";
-import {
-  randomBytes,
-  createHash,
-  scryptSync,
-  timingSafeEqual,
-} from "node:crypto";
+import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { readFile, mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { storageRoot } from "./content";
 import { database, databaseEnabled } from "./database";
+import { matchesEnvironmentAdmin, adminSessionHash } from "./admin-environment";
 const cookieName = "northia_admin";
 const sessions = path.join(storageRoot, "sessions");
 function sessionPath(token: string) {
-  return path.join(
-    sessions,
-    createHash("sha256").update(token).digest("hex") + ".json",
-  );
+  return path.join(sessions, adminSessionHash(token) + ".json");
 }
 export async function authenticated() {
   const token = (await cookies()).get(cookieName)?.value;
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return false;
   if (databaseEnabled()) {
     const rows =
-      await database()`select 1 from northia.sessions where token_hash=${createHash("sha256").update(token).digest("hex")} and expires_at > now()`;
+      await database()`select 1 from northia.sessions where token_hash=${adminSessionHash(token)} and expires_at > now()`;
     return rows.length > 0;
   }
   try {
@@ -34,6 +27,8 @@ export async function authenticated() {
   }
 }
 export async function checkCredentials(login: string, password: string) {
+  const environmentMatch = matchesEnvironmentAdmin(login, password);
+  if (environmentMatch !== null) return environmentMatch;
   const config = databaseEnabled()
     ? (
         await database()`select login,salt,hash from northia.admins where login=${login}`
@@ -53,7 +48,7 @@ export async function startSession(request: Request) {
   const token = randomBytes(32).toString("hex");
   if (databaseEnabled()) {
     await database()`delete from northia.sessions where expires_at <= now()`;
-    await database()`insert into northia.sessions(token_hash,expires_at) values(${createHash("sha256").update(token).digest("hex")},now()+interval '8 hours')`;
+    await database()`insert into northia.sessions(token_hash,expires_at) values(${adminSessionHash(token)},now()+interval '8 hours')`;
   } else {
     await mkdir(sessions, { recursive: true });
     await writeFile(
@@ -74,7 +69,7 @@ export async function endSession() {
   const token = jar.get(cookieName)?.value;
   if (token && /^[a-f0-9]{64}$/.test(token)) {
     if (databaseEnabled())
-      await database()`delete from northia.sessions where token_hash=${createHash("sha256").update(token).digest("hex")}`;
+      await database()`delete from northia.sessions where token_hash=${adminSessionHash(token)}`;
     else await unlink(sessionPath(token)).catch(() => {});
   }
   jar.delete(cookieName);
