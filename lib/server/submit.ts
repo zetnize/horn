@@ -12,8 +12,6 @@ import { SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
 import { ScriptError, sendScriptOrder } from "./google-script";
-import { databaseEnabled } from "./database";
-import { saveOrder, saveWaiting } from "./db-requests";
 const MAX_BODY_BYTES = 32_768;
 class BodyError extends Error {}
 async function readBody(request: Request): Promise<unknown> {
@@ -75,10 +73,11 @@ export async function submit(
   request: Request,
   mode: "preorder" | "waitlist",
   saveWaitlist?: (input: WaitlistInput) => Promise<void>,
+  services = { rateLimit, readContent },
 ) {
   let limit;
   try {
-    limit = await rateLimit(request, mode);
+    limit = await services.rateLimit(request, mode);
   } catch {
     return response(
       { ok: false, message: "Приём заявок временно недоступен" },
@@ -118,23 +117,7 @@ export async function submit(
       const parsed = preorderSchema.safeParse(body);
       if (!parsed.success) return invalid(parsed.error);
       const input = parsed.data;
-      if (databaseEnabled()) {
-        try {
-          return response({ ok: true, id: await saveOrder(input) });
-        } catch (error) {
-          if (error instanceof Error && error.message === "UNAVAILABLE_PRODUCT")
-            return response(
-              {
-                ok: false,
-                message: "Товар или размер больше недоступен",
-                errors: { items: ["Товар или размер недоступен"] },
-              },
-              400,
-            );
-          throw error;
-        }
-      }
-      const { products } = await readContent();
+      const { products } = await services.readContent();
       const getProduct = (slug: string) =>
         products.find((p) => p.slug === slug && !p.hidden);
       if (input.items.some((i) => !getProduct(i.slug)?.sizes.includes(i.size)))
@@ -190,10 +173,6 @@ export async function submit(
     }
     const parsed = waitlistSchema.safeParse(body);
     if (!parsed.success) return invalid(parsed.error);
-    if (databaseEnabled()) {
-      await saveWaiting(parsed.data);
-      return response({ ok: true });
-    }
     if (!saveWaitlist) throw new SheetConfigurationError("missing-env");
     await saveWaitlist(parsed.data);
     return response({ ok: true });
