@@ -19,7 +19,7 @@
     "db:import": "node scripts/database.mjs import",
     "db:media": "node scripts/database.mjs media",
     "db:admin": "node scripts/database.mjs admin",
-    "test:db": "node --import ./tests/server-loader.mjs --test tests/database.test.mjs"
+    "test:db": "node --import ./tests/server-loader.mjs --test tests/database.test.mjs tests/database-ssl.test.mjs"
   },
   "dependencies": {
     "googleapis": "^188.0.0",

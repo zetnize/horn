@@ -1,3 +1,4 @@
+import { databaseConnectionConfig } from "../lib/server/database-ssl.ts";
 import { Pool } from "pg";
 import { createSql } from "../lib/server/sql.ts";
 import { readFile, readdir } from "node:fs/promises";
@@ -17,14 +18,11 @@ try {
   )
     throw new Error("DATABASE_URL_REQUIRED");
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    ...databaseConnectionConfig(
+      process.env.DATABASE_URL,
+      process.env.DATABASE_SSL_CA,
+    ),
     max: 1,
-    ssl: {
-      rejectUnauthorized: true,
-      ...(process.env.DATABASE_SSL_CA
-        ? { ca: process.env.DATABASE_SSL_CA.replace(/\\n/g, "\n") }
-        : {}),
-    },
     connectionTimeoutMillis: 10000,
     query_timeout: 30000,
   });
@@ -139,6 +137,8 @@ try {
 } catch (error) {
   const known = [
     "DATABASE_URL_REQUIRED",
+    "DATABASE_SSL_CA_INVALID",
+    "DATABASE_URL_INVALID",
     "POSTGRES_17_REQUIRED",
     "EXPLICIT_APPLY_REQUIRED",
     "DATABASE_ALREADY_INITIALIZED",
@@ -151,9 +151,15 @@ try {
     "ADMIN_FILE_INVALID",
   ];
   console.error(
-    known.includes(error.message)
-      ? error.message
-      : "DATABASE_OPERATION_FAILED (проверьте подключение, схему и входные файлы; секреты не выводятся)",
+    [
+      "SELF_SIGNED_CERT_IN_CHAIN",
+      "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+      "CERT_HAS_EXPIRED",
+    ].includes(error.code)
+      ? "DATABASE_TLS_CERTIFICATE_ERROR: проверьте DATABASE_SSL_CA (сертификат из Supabase Database Settings)"
+      : known.includes(error.message)
+        ? error.message
+        : "DATABASE_OPERATION_FAILED (проверьте подключение, схему и входные файлы; секреты не выводятся)",
   );
   process.exitCode = 1;
 } finally {
