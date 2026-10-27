@@ -39,15 +39,19 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
     fetchMock.mock.mockImplementation(async () => Response.json(body));
     await assert.rejects(sendScriptOrder(order), /invalid-response/);
   }
-  for (const reply of [new Response("<html>Login</html>"),
-    new Response("failed", { status: 503 })]) {
+  for (const [reply, reason, status] of [
+    [new Response("<html>Login</html>"), "invalid-json", 200],
+    [new Response("failed", { status: 503 }), "http-error", 503],
+  ]) {
     fetchMock.mock.mockImplementation(async () => reply);
-    await assert.rejects(sendScriptOrder(order), /request-failed/);
+    await assert.rejects(sendScriptOrder(order), (error) =>
+      error.reason === reason && error.status === status);
   }
   for (const failure of [new TypeError("network"), new DOMException("timeout", "TimeoutError")]) {
     const before = fetchMock.mock.callCount();
     fetchMock.mock.mockImplementation(async () => { throw failure; });
-    await assert.rejects(sendScriptOrder(order), /request-failed/);
+    await assert.rejects(sendScriptOrder(order),
+      failure.name === "TimeoutError" ? /timeout/ : /request-failed/);
     assert.equal(fetchMock.mock.callCount(), before + 1, "no automatic retry");
   }
   for (const endpoint of ["", "broken", "http://script.google.com/macros/s/test/exec",

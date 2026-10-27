@@ -14,11 +14,17 @@ export class ScriptError extends Error {
     | "missing-env"
     | "invalid-url"
     | "request-failed"
+    | "http-error"
+    | "timeout"
+    | "auth-required"
+    | "invalid-json"
     | "invalid-response";
-  constructor(reason: ScriptError["reason"]) {
+  readonly status?: number;
+  constructor(reason: ScriptError["reason"], status?: number) {
     super(reason);
     this.name = "ScriptError";
     this.reason = reason;
+    this.status = status;
   }
 }
 
@@ -51,10 +57,19 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
       redirect: "follow",
       signal: AbortSignal.timeout(15_000),
     });
-    if (!response.ok) throw new ScriptError("request-failed");
-    const result: unknown = await response.json();
+    if (response.url && new URL(response.url).hostname === "accounts.google.com")
+      throw new ScriptError("auth-required", response.status);
+    if (!response.ok) throw new ScriptError("http-error", response.status);
+    let result: unknown;
+    try {
+      result = await response.json();
+    } catch (error) {
+      if (error instanceof SyntaxError)
+        throw new ScriptError("invalid-json", response.status);
+      throw error;
+    }
     if (!result || typeof result !== "object" || Array.isArray(result))
-      throw new ScriptError("invalid-response");
+      throw new ScriptError("invalid-response", response.status);
     const data = result as Record<string, unknown>;
     const confirmed =
       data.ok === true || data.success === true || data.status === "success";
@@ -62,10 +77,13 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
       !confirmed || data.ok === false || data.success === false || data.error ||
       (data.status !== undefined && data.status !== "success")
     )
-      throw new ScriptError("invalid-response");
+      throw new ScriptError("invalid-response", response.status);
   } catch (error) {
     // Do not propagate upstream bodies, URLs, request details or customer data.
     if (error instanceof ScriptError) throw error;
+    if (error instanceof Error &&
+      (error.name === "TimeoutError" || error.name === "AbortError"))
+      throw new ScriptError("timeout");
     throw new ScriptError("request-failed");
   }
 }
