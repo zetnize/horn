@@ -2,9 +2,9 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { formatPrice } from "@/data/products";
-import { preorderSchema, waitlistSchema } from "@/lib/validation";
+import { preorderSchema, waitlistSchema, type WaitlistInput } from "@/lib/validation";
 import { SheetConfigurationError } from "./sheet-errors";
-import { moscowDate, SHEETS } from "./sheet-values";
+import { SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
 import { ScriptError, sendScriptOrder } from "./google-script";
@@ -65,7 +65,11 @@ function invalid(error: z.ZodError) {
     400,
   );
 }
-export async function submit(request: Request, mode: "preorder" | "waitlist") {
+export async function submit(
+  request: Request,
+  mode: "preorder" | "waitlist",
+  saveWaitlist?: (input: WaitlistInput) => Promise<void>,
+) {
   const limit = rateLimit(request, mode);
   if (!limit.allowed)
     return response(
@@ -140,12 +144,8 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
     }
     const parsed = waitlistSchema.safeParse(body);
     if (!parsed.success) return invalid(parsed.error);
-    const { appendSheetRow } = await import("./sheets");
-    await appendSheetRow(SHEETS.waitlist, [
-      moscowDate(),
-      parsed.data.name,
-      parsed.data.contact,
-    ]);
+    if (!saveWaitlist) throw new SheetConfigurationError("missing-env");
+    await saveWaitlist(parsed.data);
     return response({ ok: true });
   } catch (error) {
     // Never log a Google error object: it may contain request headers and credentials.
