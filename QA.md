@@ -117,3 +117,13 @@
 - npm run check (lint, typecheck, build) и npm run test:unit (2 теста) прошли.
 - Файлов настоящих шрифтов нет. Фактическое изображение текста использует fallback; 1:1 по начертаниям не подтверждается.
 - Изменённые файлы: app/globals.css, components/RequestForm.tsx, typography-audit.md, design-tokens.md, TODO.md, PLAN.md, QA.md.
+
+## Локальные замены шрифтов — 27 октября 2026
+
+- Владелец предоставил Manrope,Onest,Unbounded.zip и утвердил замены. Подключены 3 статических TTF через next/font/local, сохранены OFL-лицензии; для Helvetica Neue выбран Arial.
+- Проверены cmap всех TTF: все русские буквы, ё/Ё и ₽ присутствуют.
+- В браузере подтверждены ресурсы Manrope_Regular, Unbounded_Bold и Onest_Medium с локального /_next/static/media/; ошибок шрифтов в консоли нет. Computed styles главной и формы указывают на реальные загруженные семейства, Arial применяется в роли Helvetica.
+- Проверены /, /product/tee-iron-milk, /cart, /preorder, /waitlist и /admin (экран входа) на 360 и 430 px. Горизонтального переполнения нет; показатели переполнения для sr-only h1/слайдера ожидаемы и не относятся к видимому тексту. Viewport восстановлен, данные корзины и контент не менялись, формы не отправлялись.
+- npm run check: lint, typecheck и build прошли.
+- Артефакты: output/font-replacements-checks.json, output/playwright/font-replacements.jpg.
+- Изменённые файлы: app/fonts.ts, app/fonts/Manrope-Regular.ttf, app/fonts/Unbounded-Bold.ttf, app/fonts/Onest-Medium.ttf, app/fonts/licenses/Manrope-OFL.txt, app/fonts/licenses/Unbounded-OFL.txt, app/fonts/licenses/Onest-OFL.txt, app/layout.tsx, app/globals.css, typography-audit.md, design-tokens.md, TODO.md, PLAN.md, README.md, QA.md.

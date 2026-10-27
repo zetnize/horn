@@ -11,10 +11,10 @@
   --placeholder: #d8d8d8;
   --surround: #e8e8e8;
   --error: #a12222;
-  --font-actay: "Actay", Arial, system-ui, sans-serif;
-  --font-actay-wide: "Actay Wide", Arial, system-ui, sans-serif;
-  --font-mono-sans: "Monochrome Sans", Arial, system-ui, sans-serif;
-  --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-actay: var(--font-manrope), Arial, system-ui, sans-serif;
+  --font-actay-wide: var(--font-unbounded), Arial, system-ui, sans-serif;
+  --font-mono-sans: var(--font-onest), Arial, system-ui, sans-serif;
+  --font-helvetica: Arial, Helvetica, sans-serif;
   --shell: 26.875rem;
   --gutter: clamp(0.875rem, 4vw, 1.075rem);
   --space-1: 0.25rem;

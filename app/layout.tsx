@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { readContent } from "@/lib/server/content";
 import { ContentProvider } from "@/components/ContentProvider";
+import { manrope, onest, unbounded } from "./fonts";
 export const dynamic = "force-dynamic";
 import { CartProvider } from "@/components/CartProvider";
 export const metadata: Metadata = {
@@ -33,7 +34,11 @@ export default async function RootLayout({
     products: content.products.filter((p) => !p.hidden),
   };
   return (
-    <html lang="ru" data-scroll-behavior="smooth">
+    <html
+      lang="ru"
+      data-scroll-behavior="smooth"
+      className={`${manrope.variable} ${unbounded.variable} ${onest.variable}`}
+    >
       <body>
         <ContentProvider value={visible}>
           <CartProvider>
