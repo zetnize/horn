@@ -207,6 +207,46 @@ body::-webkit-scrollbar {
   display: block;
   margin-top: var(--space-1);
 }
+.admin-products .admin-order {
+  display: grid;
+  grid-template-columns: repeat(2, var(--control));
+  flex: none;
+}
+.admin-product-delete {
+  grid-column: 1 / -1;
+  font-size: var(--text-sm);
+}
+.admin button.admin-product-delete:hover,
+.admin button.admin-product-delete:focus-visible {
+  border-color: var(--ink);
+  background: var(--panel);
+}
+.admin-delete-dialog h2 {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-actay-wide);
+  font-size: var(--text-md);
+}
+.admin-delete-dialog p + p {
+  margin-top: var(--space-3);
+}
+.admin-delete-name {
+  font-weight: var(--weight-bold);
+  overflow-wrap: anywhere;
+}
+.admin-delete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+.admin-delete-actions button {
+  flex: 1;
+}
+.admin button.admin-delete-confirm {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
 .admin-hint {
   color: var(--muted);
   font-size: var(--text-sm);

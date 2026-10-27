@@ -1,10 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
 import { formatPrice } from "@/data/products";
+import { Dialog } from "@/components/Dialog";
 
 const settingsFields: [keyof Settings, string, boolean?][] = [
   ["heroCaption", "Подпись главного изображения"],
@@ -124,6 +125,8 @@ export function AdminPanel({ initial }: { initial: Content }) {
   const [uploads, setUploads] = useState(0);
   const [message, setMessage] = useState("");
   const [failure, setFailure] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
+  const productList = useRef<HTMLOListElement>(null);
   const [savedSlugs, setSavedSlugs] = useState(
     () => new Set(initial.products.map((p) => p.slug)),
   );
@@ -288,7 +291,12 @@ export function AdminPanel({ initial }: { initial: Content }) {
             >
               + Добавить товар
             </button>
-            <ol className="admin-products">
+            <ol
+              className="admin-products"
+              ref={productList}
+              tabIndex={-1}
+              aria-label="Товары каталога"
+            >
               {data.products.map((p, i) => (
                 <li key={i}>
                   <button
@@ -325,6 +333,14 @@ export function AdminPanel({ initial }: { initial: Content }) {
                         {direction < 0 ? "↑" : "↓"}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      className="admin-product-delete"
+                      aria-label={`Удалить ${p.name}, ${p.color}, ${p.slug}`}
+                      onClick={() => setDeleting(i)}
+                    >
+                      Удалить
+                    </button>
                   </div>
                 </li>
               ))}
@@ -514,6 +530,55 @@ export function AdminPanel({ initial }: { initial: Content }) {
           </p>
         )}
       </div>
+      {deleting !== null && data.products[deleting] && (
+        <Dialog
+          labelId="admin-delete-title"
+          onDismiss={() => setDeleting(null)}
+          className="admin-delete-dialog"
+        >
+          <h2 id="admin-delete-title">Удалить товар?</h2>
+          <p className="admin-delete-name">{data.products[deleting].name}</p>
+          <p className="admin-hint">
+            {data.products[deleting].color} · {data.products[deleting].slug}
+          </p>
+          <p>
+            Товар будет удалён из каталога после нажатия «Сохранить изменения».
+            Фотографии и ранее оформленные заказы сохранятся.
+          </p>
+          <div className="admin-delete-actions">
+            <button type="button" onClick={() => setDeleting(null)}>
+              Отмена
+            </button>
+            <button
+              type="button"
+              className="admin-delete-confirm"
+              onClick={() => {
+                change((d) => ({
+                  ...d,
+                  products: d.products.filter((_, index) => index !== deleting),
+                }));
+                setSelected((index) =>
+                  index === null || index === deleting
+                    ? null
+                    : index > deleting
+                      ? index - 1
+                      : index,
+                );
+                setDeleting(null);
+                setFailure(false);
+                setMessage(
+                  "Товар убран из списка. Сохраните изменения, чтобы обновить сайт.",
+                );
+                requestAnimationFrame(() =>
+                  productList.current?.focus({ preventScroll: true }),
+                );
+              }}
+            >
+              Удалить товар
+            </button>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }
