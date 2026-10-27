@@ -18,6 +18,10 @@ export class ScriptError extends Error {
     | "timeout"
     | "auth-required"
     | "invalid-json"
+    | "script-unauthorized"
+    | "script-invalid-fields"
+    | "script-sheet-not-found"
+    | "script-server-error"
     | "invalid-response";
   readonly status?: number;
   constructor(reason: ScriptError["reason"], status?: number) {
@@ -71,6 +75,19 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
     if (!result || typeof result !== "object" || Array.isArray(result))
       throw new ScriptError("invalid-response", response.status);
     const data = result as Record<string, unknown>;
+    // Only fixed, known script errors may reach logs; never forward arbitrary text.
+    if (data.success === false) {
+      switch (data.error) {
+        case "Unauthorized":
+          throw new ScriptError("script-unauthorized", response.status);
+        case "Invalid fields":
+          throw new ScriptError("script-invalid-fields", response.status);
+        case "Sheet not found":
+          throw new ScriptError("script-sheet-not-found", response.status);
+        case "Server error":
+          throw new ScriptError("script-server-error", response.status);
+      }
+    }
     const confirmed =
       data.ok === true || data.success === true || data.status === "success";
     if (

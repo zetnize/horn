@@ -31,6 +31,16 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   assert.equal(options.cache, "no-store");
   assert.ok(options.signal instanceof AbortSignal);
   assert.deepEqual(JSON.parse(options.body), { ...order, secret: "test-only-secret" });
+  for (const [error, reason] of [
+    ["Unauthorized", "script-unauthorized"],
+    ["Invalid fields", "script-invalid-fields"],
+    ["Sheet not found", "script-sheet-not-found"],
+    ["Server error", "script-server-error"],
+  ]) {
+    fetchMock.mock.mockImplementation(async () => Response.json({ success: false, error }));
+    await assert.rejects(sendScriptOrder(order), (failure) =>
+      failure.reason === reason && failure.status === 200);
+  }
 
   for (const body of [null, [], {}, { message: "saved" }, { ok: "true" },
     { ok: false }, { success: false }, { status: "error" },
@@ -99,6 +109,10 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   assert.equal((await submit(request(), "preorder")).status, 500);
   assert.ok(!JSON.stringify(log.mock.calls).includes(order.phone));
   const before = fetchMock.mock.callCount();
+  assert.equal((await submit(request({ ...input, city: "x".repeat(101) }), "preorder")).status, 400);
+  const tooLong = await submit(request({ ...input, comment: "x".repeat(2000) }), "preorder");
+  assert.equal(tooLong.status, 400);
+  assert.ok((await tooLong.json()).errors.comment);
   assert.equal((await submit(request({ ...input, phone: "bad" }), "preorder")).status, 400);
   assert.equal((await submit(request({ website: "bot" }), "preorder")).status, 200);
   assert.equal(fetchMock.mock.callCount(), before);

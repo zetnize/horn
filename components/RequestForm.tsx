@@ -39,7 +39,7 @@ const preorderFields: FieldDefinition[] = [
     name: "city",
     label: "Город / страна",
     autoComplete: "address-level2",
-    maxLength: 150,
+    maxLength: 100,
     required: true,
   },
   {

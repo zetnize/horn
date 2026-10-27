@@ -25,7 +25,7 @@ export const preorderSchema = z.object({
       return digits.length >= 7 && digits.length <= 15;
     }, "Введите номер телефона: от 7 до 15 цифр"),
   contact: requiredText(150),
-  city: requiredText(150),
+  city: requiredText(100),
   address: requiredText(300),
   comment: z.string().trim().max(2000, "Не более 2000 символов").default(""),
   website: z.string().max(500).default(""),

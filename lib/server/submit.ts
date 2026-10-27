@@ -125,20 +125,27 @@ export async function submit(
           return `${product.name} / ${item.size} / ${product.color} / ${item.qty} / ${formatPrice(product.price)}`;
         })
         .join("\n");
-      await sendScriptOrder({
-        fullName: input.name,
-        phone: input.phone,
-        contact: input.contact,
-        city: input.city,
-        pickupAddress: input.address,
-        comment: [
+      const comment = [
           input.comment,
           `Заявка: ${id}`,
           `Состав заказа (название / размер / цвет / количество / цена за единицу):\n${items}`,
           `Итого: ${formatPrice(total)}`,
         ]
           .filter(Boolean)
-          .join("\n\n"),
+          .join("\n\n");
+      if (comment.length > 2000)
+        return response({
+          ok: false,
+          message: "Комментарий вместе с составом заказа превышает лимит таблицы. Сократите комментарий или число позиций.",
+          errors: { comment: ["Вместе с составом заказа допускается не более 2000 символов"] },
+        }, 400);
+      await sendScriptOrder({
+        fullName: input.name,
+        phone: input.phone,
+        contact: input.contact,
+        city: input.city,
+        pickupAddress: input.address,
+        comment,
       });
       return response({ ok: true, id });
     }
