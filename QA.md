@@ -107,3 +107,13 @@
 - Финальные npm run lint, npm run typecheck, npm run build прошли. Снимок: output/playwright/drop-no-borders.png; сценарии: output/qa-image-fit.js, output/qa-image-ratios.js.
 - Назначения шрифтов сверены с 1.txt/2.txt. WOFF2 не найдены; точные шрифты пока НЕ подключены, работает fallback. Требуются файлы с кириллицей для next/font/local.
 - Изменённые файлы: components/EditorialImage.tsx, app/globals.css, PLAN.md, TODO.md, design-tokens.md, QA.md.
+
+## Сверка типографики Figma — 27 октября 2026
+
+- Источник: свойства текстовых слоёв Figma в браузере после входа. Макет не изменялся, доступы не расширялись. Коннектор по-прежнему отклоняет чтение без edit access; использована панель Properties.
+- Сверены семейства/веса/размеры/строки; подтверждённая таблица в typography-audit.md.
+- В браузере прочитаны 30 computed-style ролей на /, /product/tee-iron-milk, /cart и /preorder: назначения и значения CSS соответствуют таблице. Сырые результаты: output/typography-computed.json. Форма проверена на 360 и 430 px без переполнения; viewport возвращён к исходному. Заявки не отправлялись, корзина и контент не менялись.
+- Снимки: output/playwright/typography-home.jpg, typography-preorder.jpg.
+- npm run check (lint, typecheck, build) и npm run test:unit (2 теста) прошли.
+- Файлов настоящих шрифтов нет. Фактическое изображение текста использует fallback; 1:1 по начертаниям не подтверждается.
+- Изменённые файлы: app/globals.css, components/RequestForm.tsx, typography-audit.md, design-tokens.md, TODO.md, PLAN.md, QA.md.
