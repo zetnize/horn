@@ -1,13 +1,8 @@
 import "server-only";
-import { google } from "googleapis";
+import { auth as googleAuth, sheets as googleSheets } from "googleapis/build/src/apis/sheets/index.js";
 import { escapeSheetCell, SHEETS } from "./sheet-values";
+import { SheetConfigurationError } from "./sheet-errors";
 type SheetName = (typeof SHEETS)[keyof typeof SHEETS];
-export class SheetConfigurationError extends Error {
-  constructor(public readonly reason: "missing-env" | "missing-tab") {
-    super(reason);
-    this.name = "SheetConfigurationError";
-  }
-}
 export async function appendSheetRow(
   sheet: SheetName,
   row: (string | number)[],
@@ -18,12 +13,12 @@ export async function appendSheetRow(
   if (!email || !privateKey || !sheetId) {
     throw new SheetConfigurationError("missing-env");
   }
-  const auth = new google.auth.JWT({
+  const auth = new googleAuth.JWT({
     email,
     key: privateKey,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
-  const sheets = google.sheets({ version: "v4", auth });
+  const sheets = googleSheets({ version: "v4", auth });
   const options = { timeout: 10_000, retry: false };
   const metadata = await sheets.spreadsheets.get(
     { spreadsheetId: sheetId, fields: "sheets.properties.title" },

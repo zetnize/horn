@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { formatPrice } from "@/data/products";
 import { preorderSchema, waitlistSchema } from "@/lib/validation";
-import { appendSheetRow, SheetConfigurationError } from "./sheets";
+import { SheetConfigurationError } from "./sheet-errors";
 import { moscowDate, SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
@@ -140,6 +140,7 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
     }
     const parsed = waitlistSchema.safeParse(body);
     if (!parsed.success) return invalid(parsed.error);
+    const { appendSheetRow } = await import("./sheets");
     await appendSheetRow(SHEETS.waitlist, [
       moscowDate(),
       parsed.data.name,
