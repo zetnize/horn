@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NORTHIA
 
-## Getting Started
+Мобильный магазин предзаказа по пятиэтапному ТЗ. Next.js 16.4.3, React 19.3, TypeScript, Tailwind v4; без UI-библиотек и онлайн-оплаты. Дополнительные runtime-зависимости: zod и googleapis.
 
-First, run the development server:
+## Запуск
 
-```bash
+Рекомендуется Node.js 24 (проект проверен на 24.21.0), npm 11.
+
+```powershell
+cd Z:\northia
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте http://localhost:3000. Для production-сборки:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+npm run check
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Без переменных Google в **development** валидная заявка выводится в серверную консоль и возвращает успех; в таблицу ничего не записывается. Используйте только тестовые персональные данные в таком режиме. В **production** отсутствие любой из трёх переменных приводит к HTTP 500 и сохранению введённых данных в форме.
 
-## Learn More
+## Маршруты и структура
 
-To learn more about Next.js, take a look at the following resources:
+| Путь/файл                                            | Назначение                                                                                                    |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| app/page.tsx                                         | Главная, каталог и новая коллекция                                                                            |
+| app/product/[slug]/page.tsx                          | Семь статических страниц товаров, metadata, 404                                                               |
+| app/cart/page.tsx                                    | Корзина                                                                                                       |
+| app/preorder/page.tsx, app/waitlist/page.tsx         | Формы                                                                                                         |
+| app/api/preorder/route.ts, app/api/waitlist/route.ts | POST API, runtime nodejs                                                                                      |
+| components/                                          | Header, Menu, Footer, карточки, Slider, Dialog, размеры, Accordion, CartProvider, Field, RequestForm, Success |
+| data/products.ts                                     | Единый каталог, размеры, цены, formatPrice                                                                    |
+| lib/cart-store.ts                                    | Версионированное localStorage, проверка данных, синхронизация вкладок                                         |
+| lib/validation.ts                                    | Общие клиентские и серверные zod-схемы                                                                        |
+| lib/server/submit.ts                                 | Ограничение тела, проверка, расчёт и обработка ошибок                                                         |
+| lib/server/sheets.ts                                 | Service account и spreadsheets.values.append                                                                  |
+| lib/server/sheet-values.ts                           | Названия листов, дата Москвы, экранирование ячеек                                                             |
+| lib/links.ts                                         | Подтверждённые Telegram URL (пока null)                                                                       |
+| app/globals.css, design-tokens.md                    | CSS variables, Tailwind @theme, размеры и оценки ≈                                                            |
+| public/assets/                                       | Логотип, сетки, плейсхолдеры                                                                                  |
+| TODO.md, PLAN.md, QA.md                              | Неподтверждённые данные, этапы и проверки                                                                     |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Оболочка — 100% ширины до 430 px, затем центрированная колонка. Корзина хранит только slug, size, qty. Повторное добавление увеличивает qty до 99; новые вкладки получают обновления через storage event. Если localStorage недоступен, текущая вкладка сохраняет корзину в памяти до перезагрузки.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Настройка Google Sheets владельцем
 
-## Deploy on Vercel
+1. Создайте проект в [Google Cloud Console](https://console.cloud.google.com/projectcreate).
+2. В APIs & Services → Library включите **Google Sheets API**. См. [официальную инструкцию](https://developers.google.com/workspace/guides/enable-apis).
+3. В IAM & Admin → Service Accounts создайте сервисный аккаунт. Не выдавайте ему роль владельца проекта: для таблицы достаточно её отдельного доступа.
+4. Откройте сервисный аккаунт → Keys → Add key → Create new key → JSON. Сохраните скачанный ключ вне репозитория. Если организация запрещает ключи, согласуйте способ подключения с администратором; не отключайте политику самостоятельно. [Документация ключей](https://docs.cloud.google.com/iam/docs/keys-create-delete).
+5. Создайте Google-таблицу и откройте её доступ адресу client_email из JSON с ролью **Редактор**.
+6. Создайте две вкладки с точными названиями **Заявки** и **Лист ожидания**. В первую строку добавьте заголовки ниже.
+7. ID таблицы — часть URL между /spreadsheets/d/ и /edit.
+8. Создайте локальный .env.local по именам из .env.example и самостоятельно внесите значения. Не отправляйте приватный ключ в чат и не коммитьте JSON/.env.local.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Переменная                   | Значение                                           |
+| ---------------------------- | -------------------------------------------------- |
+| GOOGLE_SERVICE_ACCOUNT_EMAIL | client_email сервисного аккаунта                   |
+| GOOGLE_PRIVATE_KEY           | private_key целиком, включая BEGIN/END PRIVATE KEY |
+| GOOGLE_SHEET_ID              | ID таблицы                                         |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+В .env.local оберните многострочный ключ двойными кавычками; допустимы настоящие переводы строк или литеральные `\n`. Сервер заменяет `\n` переводами строк. В интерфейсе Vercel вставляйте значение ключа без дополнительных внешних кавычек. Переменные не имеют префикса NEXT_PUBLIC и используются только сервером.
+
+### Заголовки листов
+
+**Заявки**, A1:J1:
+
+```text
+Дата | ID заявки | ФИО | Телефон | Контакт | Город / страна | Адрес СДЭК | Комментарий | Состав заказа | Сумма
+```
+
+**Лист ожидания**, A1:C1:
+
+```text
+Дата | Имя | Контакт
+```
+
+Каждый заголовок — отдельная ячейка. Дата формируется с Europe/Moscow. Состав заказа — одна строка на позицию: название / размер / цвет / количество / цена за единицу. Сумма записывается числом в рублях. Названия листов находятся в SHEETS в lib/server/sheet-values.ts.
+
+Перед append проверяется наличие нужной вкладки. Отсутствие вкладки вызывает HTTP 500; пользователю показывается сообщение о ненастроенном приёме, сервер логирует missing-tab. Создание вкладок и заголовков автоматически не выполняется. API использует [values.append](https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append), RAW и INSERT_ROWS.
+
+После настройки вручную отправьте одну тестовую заявку и одну запись листа ожидания; проверьте соответствующие строки и сумму. **Реальная запись в Google не проверялась: ключи и таблица не предоставлены.**
+
+## Защита и ограничения
+
+- Клиент и сервер проверяют обязательные поля, trim и лимиты; телефон допускает цифры, пробелы, +, скобки и дефисы, от 7 до 15 цифр.
+- JSON-тело ограничено 32 KiB; позиции 1–50, количество 1–99. Неизвестные товары, недоступные размеры и дубли slug+size отклоняются.
+- Названия, цены, цвета и итог считаются по серверному каталогу. Посторонние поля клиента отбрасываются.
+- Заполненный honeypot website возвращает ok без записи и логирования заявки.
+- Rate limit: 10 запросов за 10 минут на IP и тип формы, HTTP 429 с Retry-After; до 10 000 ключей в памяти.
+- **Rate limit в serverless ограничен одним процессом**, сбрасывается при перезапуске и не синхронизируется между инстансами. Хостинг должен перезаписывать x-vercel-forwarded-for/x-forwarded-for; иначе IP можно подделать. Для публичной нагрузки нужен доверенный proxy и распределённый limiter/WAF.
+- Ячейки с =, +, -, @ после начальных пробелов получают апостроф; RAW дополнительно исключает интерпретацию формул.
+- В production логируются только безопасные коды ошибок; объект Google error, заголовки запросов и ключи не выводятся.
+- У запросов Google таймаут 10 секунд, автоматические повторы отключены. Нет гарантии exactly-once при потере ответа после успешного append: повторная отправка может создать дубль. Для такого требования понадобится долговечное хранилище ключей идемпотентности.
+- При ошибках 400/429/500 и сети поля и корзина остаются; очистка только после успеха. Кнопка блокируется во время запроса, повторный submit отклоняется синхронным флагом.
+
+## Публикация на Vercel
+
+Публикация не выполнялась. После проверки материалов и отдельного разрешения:
+
+1. Разместите репозиторий в своём Git-провайдере и импортируйте проект в Vercel с preset Next.js.
+2. В Project Settings → Environment Variables добавьте три переменные для нужного окружения. Ключ пометьте Sensitive; Preview желательно подключать к отдельной тестовой таблице.
+3. Build Command: npm run build, Install Command: npm ci. API требует Node.js runtime, статический export не подходит.
+4. Запустите deployment. После изменений переменных нужен новый deployment; [документация Vercel](https://vercel.com/docs/environment-variables).
+5. Проверьте предзаказ и лист ожидания, появление строк в таблице, ошибки и приватность ключей.
+
+До публичного запуска заполните Telegram URL, добавьте фотографии, шрифты, тексты и домен/OG-изображение из TODO.md.
+
+## Проверки
+
+```powershell
+npm run check
+npm run test:unit
+```
+
+В другом терминале при работающем dev-сервере **без Google-ключей**:
+
+```powershell
+npm run test:api
+```
+
+Тесты API отправляют синтетические заявки. Не запускайте их против боевой таблицы.
+
+Проверка production без настроенных ключей:
+
+```powershell
+npm run build
+npm start -- --port 3001
+# В другом терминале:
+$env:TEST_BASE_URL = "http://127.0.0.1:3001"
+$env:TEST_PRODUCTION = "1"
+npm run test:api
+```
+
+Node test runner проверяет экранирование, московскую дату и API-контракты. Браузерные проверки выполнялись через Playwright CLI; локальные сценарии/снимки в output/playwright, папка исключена из Git. Подробности в QA.md.
+
+## Материалы и точность
+
+Исходные промпты: C:/Users/Mizau/Desktop/prompts/1.txt–5.txt. Скриншоты/SVG: C:/Users/Mizau/Desktop/sctinshot,svg.
+
+[Макет Figma](https://www.figma.com/design/BgXJsA0lBpNQdPKMvs38Ui/northia?node-id=2702-295) был предоставлен позже. Коннектор отказал из-за отсутствия требуемого доступа редактора; браузер вернул 403. Точные значения из файла не получены.
+
+Оригинальные фотографии и шрифты не предоставлены; используются предусмотренные ТЗ серые плейсхолдеры и системные fallback. После получения woff2 с кириллицей подключите next/font/local в layout.tsx с переменными --font-actay, --font-actay-wide, --font-mono-sans; Helvetica Neue при наличии. Уберите временные подписи «фото ожидается» из alt после замены изображений. Логотип оригинальный SVG, размерные сетки оригинальные PNG низкого разрешения.
+
+Визуальное совпадение 1:1 не заявляется. Неизвестные материалы, оценки размеров, различие сроков отправки, отсутствие L у первого товара, цветовые допущения, меню и лист ожидания перечислены в TODO.md.
