@@ -11,25 +11,18 @@ export async function POST(request: Request) {
     return adminResponse({ message: "Требуется вход" }, 403);
   try {
     const bytes = await limitedBody(request, 8 * 1024 * 1024);
-    const ext = bytes
+    const png = bytes
       .subarray(0, 8)
-      .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
-      ? "png"
-      : bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
-        ? "jpg"
-        : bytes.toString("ascii", 0, 4) === "RIFF" &&
-            bytes.toString("ascii", 8, 12) === "WEBP"
-          ? "webp"
-          : null;
-    if (!ext)
+      .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
+    if (!png)
       return adminResponse(
-        { message: "Выберите изображение JPEG, PNG или WebP" },
+        { message: "Выберите изображение в формате PNG" },
         400,
       );
     const dir = path.join(storageRoot, "media");
-    const name = `${randomUUID()}.${ext}`;
+    const name = `${randomUUID()}.png`;
     if (databaseEnabled()) {
-      const mime = `image/${ext === "jpg" ? "jpeg" : ext}`;
+      const mime = "image/png";
       await uploadMedia(name, bytes, mime);
       await database()`insert into northia.media(name,mime,bytes) values(${name},${mime},${bytes.length})`;
     } else {

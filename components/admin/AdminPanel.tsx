@@ -76,7 +76,7 @@ function Upload({
         {label}
         <input
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/png,.png"
           disabled={busy}
           onChange={async (e) => {
             const file = e.target.files?.[0];
@@ -107,6 +107,7 @@ function Upload({
           }}
         />
       </label>
+      <p className="admin-hint">PNG, до 8 МБ. Прозрачный фон сохраняется.</p>
       {busy && <p role="status">Загрузка…</p>}
       {error && (
         <p role="alert" className="form-error">
