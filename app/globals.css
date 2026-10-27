@@ -473,6 +473,45 @@ svg {
   right: 0;
   color: var(--muted);
 }
+.cart-item-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.cart-quantity {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  border: var(--stroke) solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-mono-sans);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+}
+.cart-quantity button {
+  width: var(--control);
+  height: var(--control);
+  padding: 0;
+  background: transparent;
+  font-size: var(--text-lg);
+}
+.cart-quantity button:hover:not(:disabled) {
+  background: var(--panel);
+}
+.cart-quantity button:active:not(:disabled) {
+  background: var(--button);
+}
+.cart-quantity button:disabled {
+  color: var(--border);
+  cursor: default;
+  opacity: 1;
+}
+.cart-quantity > span {
+  min-width: var(--space-6);
+  text-align: center;
+}
 .cart-summary {
   padding-top: var(--space-8);
 }

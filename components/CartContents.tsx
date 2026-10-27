@@ -5,8 +5,9 @@ import { useCart } from "./CartProvider";
 import { formatPrice } from "@/data/products";
 import { useContent } from "./ContentProvider";
 import { Icon } from "./Icons";
+import { MAX_QTY } from "@/lib/cart-store";
 export function CartContents() {
-  const { items, ready, remove } = useCart();
+  const { items, ready, remove, setQuantity } = useCart();
   const { products } = useContent();
   const getProduct = (slug: string) => products.find((p) => p.slug === slug);
   const unavailable = items.some(
@@ -69,9 +70,40 @@ export function CartContents() {
                 <div>
                   <p>Цвет: {product.color}</p>
                   <p>Размер: {item.size}</p>
-                  {item.qty > 1 ? <p>Количество: {item.qty} ед.</p> : null}
                 </div>
-                <p>Стоимость: {formatPrice(product.price * item.qty)}</p>
+                <div className="cart-item-bottom">
+                  <p>Стоимость: {formatPrice(product.price * item.qty)}</p>
+                  <div
+                    className="cart-quantity"
+                    role="group"
+                    aria-label={`Количество ${product.name}, размер ${item.size}`}
+                  >
+                    <button
+                      type="button"
+                      disabled={item.qty <= 1}
+                      onClick={() =>
+                        setQuantity(item.slug, item.size, item.qty - 1)
+                      }
+                      aria-label={`Уменьшить количество ${product.name}, размер ${item.size}`}
+                    >
+                      −
+                    </button>
+                    <span aria-live="polite" aria-atomic="true">
+                      <span className="sr-only">Количество: </span>
+                      {item.qty}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={item.qty >= MAX_QTY}
+                      onClick={() =>
+                        setQuantity(item.slug, item.size, item.qty + 1)
+                      }
+                      aria-label={`Увеличить количество ${product.name}, размер ${item.size}`}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
               <button
                 className="icon-button cart-remove"

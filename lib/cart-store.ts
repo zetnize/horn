@@ -99,6 +99,14 @@ export function removeCartItem(slug: string, size: Size) {
     ),
   );
 }
+export function setCartItemQuantity(slug: string, size: Size, qty: number) {
+  if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) return;
+  save(
+    getCartSnapshot().items.map((item) =>
+      item.slug === slug && item.size === size ? { ...item, qty } : item,
+    ),
+  );
+}
 export function clearCart() {
   save([]);
 }

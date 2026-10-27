@@ -7,6 +7,7 @@ import {
   getServerCartSnapshot,
   removeCartItem,
   subscribeCart,
+  setCartItemQuantity,
   type CartItem,
 } from "@/lib/cart-store";
 import type { Size } from "@/data/products";
@@ -16,6 +17,7 @@ type CartContextValue = {
   add: (slug: string, size: Size) => void;
   remove: (slug: string, size: Size) => void;
   clear: () => void;
+  setQuantity: (slug: string, size: Size, qty: number) => void;
 };
 const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -31,6 +33,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         add: addCartItem,
         remove: removeCartItem,
         clear: clearCart,
+        setQuantity: setCartItemQuantity,
       }}
     >
       {children}
