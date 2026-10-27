@@ -11,9 +11,9 @@
   --placeholder: #d8d8d8;
   --surround: #e8e8e8;
   --error: #a12222;
-  --font-actay: Arial, system-ui, sans-serif;
-  --font-actay-wide: Arial, system-ui, sans-serif;
-  --font-mono-sans: Arial, system-ui, sans-serif;
+  --font-actay: "Actay", Arial, system-ui, sans-serif;
+  --font-actay-wide: "Actay Wide", Arial, system-ui, sans-serif;
+  --font-mono-sans: "Monochrome Sans", Arial, system-ui, sans-serif;
   --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --shell: 26.875rem;
   --gutter: clamp(0.875rem, 4vw, 1.075rem);
@@ -789,8 +789,14 @@ svg {
   position: relative;
   aspect-ratio: var(--hero-ratio);
   background: var(--placeholder);
+  overflow: hidden;
+}
+.editorial-image.uploaded-image {
+  background: var(--paper);
 }
 .editorial-image img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

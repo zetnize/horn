@@ -98,3 +98,12 @@
 - package.json
 - scripts/setup-admin.mjs
 - tests/admin.test.mjs
+
+## Изображения и шрифты — 27 октября 2026
+
+- Исправлено отображение hero/drop с прозрачными полями экспорта. Файлы storage/media и контент не изменялись.
+- Playwright: текущие изображения на 360/393/430/1440 px, отсутствие горизонтального переполнения и ошибок JavaScript; проверены ResizeObserver и ленивая загрузка drop.
+- Дополнительно через подмену только браузерных ответов проверены PNG 600×200, 200×600, 300×300 с прозрачной рамкой. Пиксели четырёх углов снимка подтверждают заполнение непрозрачным изображением, без полос. Подмены сняты; реальные изображения снова отображаются.
+- Финальные npm run lint, npm run typecheck, npm run build прошли. Снимок: output/playwright/drop-no-borders.png; сценарии: output/qa-image-fit.js, output/qa-image-ratios.js.
+- Назначения шрифтов сверены с 1.txt/2.txt. WOFF2 не найдены; точные шрифты пока НЕ подключены, работает fallback. Требуются файлы с кириллицей для next/font/local.
+- Изменённые файлы: components/EditorialImage.tsx, app/globals.css, PLAN.md, TODO.md, design-tokens.md, QA.md.
