@@ -36,21 +36,23 @@ export async function Footer() {
       </div>
       <div className="footer-legal">
         <p>Northia</p>
-        <p>{business.name}</p>
         <p>
+          {business.name}
+          <br />
           ИНН {business.inn}
           <br />
           ОГРНИП {business.ogrnip}
         </p>
-        <p>{business.address}</p>
         <p>
           <a href="tel:+79931841676">{business.phone}</a>
           <br />
           <a href={`mailto:${business.email}`}>{business.email}</a>
         </p>
         <details>
-          <summary>Банковские реквизиты</summary>
+          <summary>Реквизиты продавца</summary>
           <dl className="bank-details">
+            <dt>Адрес для обращений и возврата</dt>
+            <dd>{business.address}</dd>
             <dt>Расчётный счёт</dt>
             <dd>40802810100005508002</dd>
             <dt>Банк</dt>
@@ -66,9 +68,9 @@ export async function Footer() {
           </dl>
         </details>
         <nav className="legal-links" aria-label="Юридическая информация">
-          <Link href="/legal/terms">Заказ, оплата, доставка и возврат</Link>
-          <Link href="/legal/privacy">Политика обработки данных</Link>
-          <Link href="/legal/consent">Согласие на обработку данных</Link>
+          <Link href="/legal/terms">Заказ и возврат</Link>
+          <Link href="/legal/privacy">Политика данных</Link>
+          <Link href="/legal/consent">Согласие</Link>
         </nav>
       </div>
     </footer>
