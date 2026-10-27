@@ -13,18 +13,27 @@
     "test:unit": "node --import ./tests/server-loader.mjs --test tests/sheet-values.test.mjs tests/google-script.test.mjs",
     "test:api": "node --test tests/api.test.mjs",
     "test:admin": "node --test tests/admin.test.mjs",
-    "admin:setup": "node scripts/setup-admin.mjs"
+    "admin:setup": "node scripts/setup-admin.mjs",
+    "db:check": "node scripts/database.mjs check",
+    "db:migrate": "node scripts/database.mjs migrate",
+    "db:import": "node scripts/database.mjs import",
+    "db:media": "node scripts/database.mjs media",
+    "db:admin": "node scripts/database.mjs admin",
+    "test:db": "node --import ./tests/server-loader.mjs --test tests/database.test.mjs"
   },
   "dependencies": {
     "googleapis": "^188.0.0",
     "next": "16.4.3",
+    "pg": "^8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.12",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

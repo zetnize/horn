@@ -4,9 +4,12 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { contentSchema, type Content } from "@/lib/content-schema";
 import { defaultContent } from "@/data/content-defaults";
+import { databaseEnabled } from "./database";
+import { readDatabaseContent, saveDatabaseContent } from "./db-content";
 export const storageRoot = path.join(process.cwd(), "storage");
 const filename = path.join(storageRoot, "content.json");
 export async function readContent(): Promise<Content> {
+  if (databaseEnabled()) return readDatabaseContent();
   try {
     return contentSchema.parse(JSON.parse(await readFile(filename, "utf8")));
   } catch (error) {
@@ -18,6 +21,7 @@ export async function readContent(): Promise<Content> {
 // Serializes writes in the supported single Node process; revision detects stale editors.
 let pending: Promise<unknown> = Promise.resolve();
 export function saveContent(input: Content): Promise<Content> {
+  if (databaseEnabled()) return saveDatabaseContent(input);
   const task = pending.then(async () => {
     const current = await readContent();
     if (input.revision !== current.revision) throw new Error("CONFLICT");

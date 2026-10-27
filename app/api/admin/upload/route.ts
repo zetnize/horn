@@ -4,6 +4,8 @@ import path from "node:path";
 import { authenticated, sameOrigin } from "@/lib/server/admin-auth";
 import { storageRoot } from "@/lib/server/content";
 import { adminResponse, limitedBody } from "@/lib/server/admin-http";
+import { database, databaseEnabled } from "@/lib/server/database";
+import { uploadMedia } from "@/lib/server/storage";
 export async function POST(request: Request) {
   if (!sameOrigin(request) || !(await authenticated()))
     return adminResponse({ message: "Требуется вход" }, 403);
@@ -25,9 +27,15 @@ export async function POST(request: Request) {
         400,
       );
     const dir = path.join(storageRoot, "media");
-    await mkdir(dir, { recursive: true });
     const name = `${randomUUID()}.${ext}`;
-    await writeFile(path.join(dir, name), bytes, { flag: "wx" });
+    if (databaseEnabled()) {
+      const mime = `image/${ext === "jpg" ? "jpeg" : ext}`;
+      await uploadMedia(name, bytes, mime);
+      await database()`insert into northia.media(name,mime,bytes) values(${name},${mime},${bytes.length})`;
+    } else {
+      await mkdir(dir, { recursive: true });
+      await writeFile(path.join(dir, name), bytes, { flag: "wx" });
+    }
     return adminResponse({ path: `/media/${name}` });
   } catch {
     return adminResponse(

@@ -2,12 +2,18 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { formatPrice } from "@/data/products";
-import { preorderSchema, waitlistSchema, type WaitlistInput } from "@/lib/validation";
+import {
+  preorderSchema,
+  waitlistSchema,
+  type WaitlistInput,
+} from "@/lib/validation";
 import { SheetConfigurationError } from "./sheet-errors";
 import { SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
 import { ScriptError, sendScriptOrder } from "./google-script";
+import { databaseEnabled } from "./database";
+import { saveOrder, saveWaiting } from "./db-requests";
 const MAX_BODY_BYTES = 32_768;
 class BodyError extends Error {}
 async function readBody(request: Request): Promise<unknown> {
@@ -70,7 +76,15 @@ export async function submit(
   mode: "preorder" | "waitlist",
   saveWaitlist?: (input: WaitlistInput) => Promise<void>,
 ) {
-  const limit = rateLimit(request, mode);
+  let limit;
+  try {
+    limit = await rateLimit(request, mode);
+  } catch {
+    return response(
+      { ok: false, message: "Приём заявок временно недоступен" },
+      503,
+    );
+  }
   if (!limit.allowed)
     return response(
       { ok: false, message: "Слишком много попыток. Попробуйте позже." },
@@ -104,6 +118,22 @@ export async function submit(
       const parsed = preorderSchema.safeParse(body);
       if (!parsed.success) return invalid(parsed.error);
       const input = parsed.data;
+      if (databaseEnabled()) {
+        try {
+          return response({ ok: true, id: await saveOrder(input) });
+        } catch (error) {
+          if (error instanceof Error && error.message === "UNAVAILABLE_PRODUCT")
+            return response(
+              {
+                ok: false,
+                message: "Товар или размер больше недоступен",
+                errors: { items: ["Товар или размер недоступен"] },
+              },
+              400,
+            );
+          throw error;
+        }
+      }
       const { products } = await readContent();
       const getProduct = (slug: string) =>
         products.find((p) => p.slug === slug && !p.hidden);
@@ -126,20 +156,28 @@ export async function submit(
         })
         .join("\n");
       const comment = [
-          input.comment,
-          `Заявка: ${id}`,
-          `Согласие: ${input.consentVersion}; принято: ${new Date().toISOString()}; форма: preorder`,
-          `Состав заказа (название / размер / цвет / количество / цена за единицу):\n${items}`,
-          `Итого: ${formatPrice(total)}`,
-        ]
-          .filter(Boolean)
-          .join("\n\n");
+        input.comment,
+        `Заявка: ${id}`,
+        `Согласие: ${input.consentVersion}; принято: ${new Date().toISOString()}; форма: preorder`,
+        `Состав заказа (название / размер / цвет / количество / цена за единицу):\n${items}`,
+        `Итого: ${formatPrice(total)}`,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
       if (comment.length > 2000)
-        return response({
-          ok: false,
-          message: "Комментарий вместе с составом заказа превышает лимит таблицы. Сократите комментарий или число позиций.",
-          errors: { comment: ["Вместе с составом заказа допускается не более 2000 символов"] },
-        }, 400);
+        return response(
+          {
+            ok: false,
+            message:
+              "Комментарий вместе с составом заказа превышает лимит таблицы. Сократите комментарий или число позиций.",
+            errors: {
+              comment: [
+                "Вместе с составом заказа допускается не более 2000 символов",
+              ],
+            },
+          },
+          400,
+        );
       await sendScriptOrder({
         fullName: input.name,
         phone: input.phone,
@@ -152,6 +190,10 @@ export async function submit(
     }
     const parsed = waitlistSchema.safeParse(body);
     if (!parsed.success) return invalid(parsed.error);
+    if (databaseEnabled()) {
+      await saveWaiting(parsed.data);
+      return response({ ok: true });
+    }
     if (!saveWaitlist) throw new SheetConfigurationError("missing-env");
     await saveWaitlist(parsed.data);
     return response({ ok: true });

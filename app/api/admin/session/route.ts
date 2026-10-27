@@ -6,17 +6,33 @@ import {
   startSession,
 } from "@/lib/server/admin-auth";
 import { adminResponse, limitedBody } from "@/lib/server/admin-http";
+import { databaseEnabled } from "@/lib/server/database";
+import { rateLimit } from "@/lib/server/rate-limit";
 const attempts: number[] = [];
 export async function POST(request: Request) {
   if (!sameOrigin(request))
     return adminResponse({ message: "Запрос отклонён" }, 403);
-  while (attempts.length && attempts[0] < Date.now() - 60000) attempts.shift();
-  if (attempts.length >= 5)
-    return adminResponse(
-      { message: "Слишком много попыток. Подождите минуту." },
-      429,
-    );
-  attempts.push(Date.now());
+  if (databaseEnabled()) {
+    try {
+      const limit = await rateLimit(request, "admin-login");
+      if (!limit.allowed)
+        return adminResponse(
+          { message: "Слишком много попыток. Подождите минуту." },
+          429,
+        );
+    } catch {
+      return adminResponse({ message: "Вход временно недоступен" }, 503);
+    }
+  } else {
+    while (attempts.length && attempts[0] < Date.now() - 60000)
+      attempts.shift();
+    if (attempts.length >= 5)
+      return adminResponse(
+        { message: "Слишком много попыток. Подождите минуту." },
+        429,
+      );
+    attempts.push(Date.now());
+  }
   try {
     const body = JSON.parse((await limitedBody(request, 2048)).toString());
     if (
