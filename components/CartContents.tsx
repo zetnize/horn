@@ -2,10 +2,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "./CartProvider";
-import { formatPrice, getProduct } from "@/data/products";
+import { formatPrice } from "@/data/products";
+import { useContent } from "./ContentProvider";
 import { Icon } from "./Icons";
 export function CartContents() {
   const { items, ready, remove } = useCart();
+  const { products } = useContent();
+  const getProduct = (slug: string) => products.find((p) => p.slug === slug);
+  const unavailable = items.some(
+    (i) => !getProduct(i.slug)?.sizes.includes(i.size),
+  );
   if (!ready)
     return (
       <div className="empty-state" role="status">
@@ -29,7 +35,18 @@ export function CartContents() {
       <ul className="cart-list">
         {items.map((item) => {
           const product = getProduct(item.slug);
-          if (!product) return null;
+          if (!product || !product.sizes.includes(item.size))
+            return (
+              <li className="cart-item" key={`${item.slug}-${item.size}`}>
+                <p>Товар или размер больше недоступен</p>
+                <button
+                  className="button"
+                  onClick={() => remove(item.slug, item.size)}
+                >
+                  Убрать
+                </button>
+              </li>
+            );
           return (
             <li className="cart-item" key={`${item.slug}-${item.size}`}>
               <Link
@@ -81,9 +98,13 @@ export function CartContents() {
         <p className="delivery-note">
           *Стоимость доставки рассчитывается при оформлении
         </p>
-        <Link className="button button-primary" href="/preorder">
-          ОФОРМИТЬ ЗАЯВКУ
-        </Link>
+        {unavailable ? (
+          <p role="alert">Уберите недоступные позиции перед оформлением.</p>
+        ) : (
+          <Link className="button button-primary" href="/preorder">
+            ОФОРМИТЬ ЗАЯВКУ
+          </Link>
+        )}
       </div>
     </>
   );

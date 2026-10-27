@@ -50,3 +50,51 @@
 - Нет реальных Telegram-адресов, описаний товаров 2–7, доставки/ухода.
 - Figma-коннектор отказал в доступе, браузер получил 403; ссылка сохранена в README/TODO.
 - Google live append, публикация, Safari/iOS и физические устройства не проверялись.
+
+## Админ-панель — 27 октября 2026
+
+- npm run check: lint, typecheck и production build прошли без предупреждений.
+- npm run test:unit: 2 теста; npm run test:api: 7 групп; npm run test:admin с тестовыми данными доступа: 1 комплексный сценарий — все прошли.
+- Проверены запреты чтения/изменения без входа, неверный пароль, посторонний Origin, HttpOnly/SameSite, неверные цены/ссылки, недопустимая загрузка, PNG/media, добавление товара, динамическая страница, скрытие/404, конфликт версии, восстановление контента и аннулирование сессии после выхода.
+- Playwright: вход; изменение цены 4980→5001→4980 через UI; загрузка главного изображения, редактирование текста бренда и предзаказа; сохранение; декодирование изображения на главной; показ текста предзаказа с непустой корзиной. Сохранение после перезапуска проверено. Тестовый контент восстановлен.
+- Playwright: главная на 360/393/430/900 px, ширина страницы не превышает viewport, оболочка не более 430 px, scrollbar-width:none. Панель проверена на 393 px.
+- Локальные снимки: output/playwright/admin-catalog.png, admin-content-final.png.
+- Размещение и реальная запись Google Sheets не выполнялись. Файловое хранилище рассчитано на один Node-процесс и постоянный диск.
+
+Изменённые и добавленные файлы этого этапа:
+
+- .gitignore
+- PLAN.md
+- QA.md
+- README.md
+- TODO.md
+- app/admin/page.tsx
+- app/api/admin/content/route.ts
+- app/api/admin/session/route.ts
+- app/api/admin/upload/route.ts
+- app/globals.css
+- app/layout.tsx
+- app/media/[name]/route.ts
+- app/page.tsx
+- app/product/[slug]/page.tsx
+- components/CartContents.tsx
+- components/ContentProvider.tsx
+- components/EditorialImage.tsx
+- components/Footer.tsx
+- components/ProductGrid.tsx
+- components/RequestForm.tsx
+- components/admin/AdminLogin.tsx
+- components/admin/AdminPanel.tsx
+- data/content-defaults.ts
+- design-tokens.md
+- lib/cart-store.ts
+- lib/content-schema.ts
+- lib/server/admin-auth.ts
+- lib/server/admin-http.ts
+- lib/server/content.ts
+- lib/server/submit.ts
+- lib/validation.ts
+- next.config.ts
+- package.json
+- scripts/setup-admin.mjs
+- tests/admin.test.mjs

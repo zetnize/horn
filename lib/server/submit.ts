@@ -1,10 +1,11 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { getProduct, formatPrice } from "@/data/products";
+import { formatPrice } from "@/data/products";
 import { preorderSchema, waitlistSchema } from "@/lib/validation";
 import { appendSheetRow, SheetConfigurationError } from "./sheets";
 import { moscowDate, SHEETS } from "./sheet-values";
+import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
 const MAX_BODY_BYTES = 32_768;
 class BodyError extends Error {}
@@ -98,11 +99,23 @@ export async function submit(request: Request, mode: "preorder" | "waitlist") {
       const parsed = preorderSchema.safeParse(body);
       if (!parsed.success) return invalid(parsed.error);
       const input = parsed.data;
+      const { products } = await readContent();
+      const getProduct = (slug: string) =>
+        products.find((p) => p.slug === slug && !p.hidden);
+      if (input.items.some((i) => !getProduct(i.slug)?.sizes.includes(i.size)))
+        return response(
+          {
+            ok: false,
+            message: "Товар или размер больше недоступен. Обновите корзину.",
+            errors: { items: ["Товар или размер недоступен"] },
+          },
+          400,
+        );
       const id = randomUUID();
       let total = 0;
       const items = input.items
         .map((item) => {
-          const product = getProduct(item.slug)!; // validated by the shared schema
+          const product = getProduct(item.slug)!; // validated against current server catalog
           total += product.price * item.qty;
           return `${product.name} / ${item.size} / ${product.color} / ${item.qty} / ${formatPrice(product.price)}`;
         })

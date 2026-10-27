@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProduct, products } from "@/data/products";
+import { readContent } from "@/lib/server/content";
+async function getProduct(slug: string) {
+  return (await readContent()).products.find(
+    (p) => p.slug === slug && !p.hidden,
+  );
+}
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Slider } from "@/components/Slider";
 import { ProductDetails } from "@/components/ProductDetails";
 import { Accordion } from "@/components/Accordion";
-export function generateStaticParams() {
-  return products.map(({ slug }) => ({ slug }));
-}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const product = getProduct((await params).slug);
+  const product = await getProduct((await params).slug);
   if (!product) return { title: "Товар не найден" };
   return {
     title: product.name,
@@ -33,7 +36,7 @@ export default async function ProductPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const product = getProduct((await params).slug);
+  const product = await getProduct((await params).slug);
   if (!product) notFound();
   return (
     <>
@@ -50,10 +53,10 @@ export default async function ProductPage({
             <p>{product.description}</p>
           </Accordion>
           <Accordion title="Доставка">
-            <p>Информация о доставке пока не предоставлена.</p>
+            <p>{product.delivery}</p>
           </Accordion>
           <Accordion title="Состав и уход">
-            <p>Информация о составе и уходе пока не предоставлена.</p>
+            <p>{product.care}</p>
           </Accordion>
         </div>
       </main>

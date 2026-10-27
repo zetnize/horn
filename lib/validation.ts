@@ -1,38 +1,21 @@
 import { z } from "zod";
-import { getProduct } from "@/data/products";
 const requiredText = (max: number) =>
   z
     .string({ error: "Заполните поле" })
     .trim()
     .min(1, "Заполните поле")
     .max(max, `Не более ${max} символов`);
-export const itemSchema = z
-  .object({
-    slug: requiredText(100),
-    size: z.enum(["XS", "S", "M", "L", "XL"], {
-      error: "Выберите доступный размер",
-    }),
-    qty: z
-      .number({ error: "Укажите количество" })
-      .int("Количество должно быть целым")
-      .min(1, "Минимум 1")
-      .max(99, "Максимум 99"),
-  })
-  .superRefine((item, ctx) => {
-    const product = getProduct(item.slug);
-    if (!product)
-      ctx.addIssue({
-        code: "custom",
-        path: ["slug"],
-        message: "Товар не найден",
-      });
-    else if (!product.sizes.includes(item.size))
-      ctx.addIssue({
-        code: "custom",
-        path: ["size"],
-        message: "Размер недоступен",
-      });
-  });
+export const itemSchema = z.object({
+  slug: requiredText(100),
+  size: z.enum(["XS", "S", "M", "L", "XL"], {
+    error: "Выберите доступный размер",
+  }),
+  qty: z
+    .number({ error: "Укажите количество" })
+    .int("Количество должно быть целым")
+    .min(1, "Минимум 1")
+    .max(99, "Максимум 99"),
+});
 export const preorderSchema = z.object({
   name: requiredText(150),
   phone: requiredText(40)

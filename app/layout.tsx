@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { readContent } from "@/lib/server/content";
+import { ContentProvider } from "@/components/ContentProvider";
+export const dynamic = "force-dynamic";
 import { CartProvider } from "@/components/CartProvider";
 export const metadata: Metadata = {
   title: {
@@ -21,20 +24,27 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: "#ffffff",
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const content = await readContent();
+  const visible = {
+    ...content,
+    products: content.products.filter((p) => !p.hidden),
+  };
   return (
     <html lang="ru" data-scroll-behavior="smooth">
       <body>
-        <CartProvider>
-          <div className="shell">
-            <a className="skip-link" href="#main">
-              К содержимому
-            </a>
-            {children}
-          </div>
-        </CartProvider>
+        <ContentProvider value={visible}>
+          <CartProvider>
+            <div className="shell">
+              <a className="skip-link" href="#main">
+                К содержимому
+              </a>
+              {children}
+            </div>
+          </CartProvider>
+        </ContentProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
-import { links } from "@/lib/links";
+import { readContent } from "@/lib/server/content";
 import { Icon } from "./Icons";
-export function Footer() {
+export async function Footer() {
+  const { settings: links } = await readContent();
   return (
     <footer className="footer container" id="contacts">
       <h2>Быстрая связь</h2>
@@ -33,7 +34,7 @@ export function Footer() {
       </div>
       <div className="footer-legal">
         <p>Northia</p>
-        <p>ИП ЛОЛАЕВА ВИКТОРИЯ</p>
+        <p>{links.legalName}</p>
       </div>
     </footer>
   );

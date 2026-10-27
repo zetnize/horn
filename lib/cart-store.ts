@@ -1,4 +1,4 @@
-import { getProduct, type Size } from "@/data/products";
+import { type Size } from "@/data/products";
 export type CartItem = { slug: string; size: Size; qty: number };
 export const CART_KEY = "northia.cart.v1";
 export const MAX_QTY = 99;
@@ -20,8 +20,11 @@ export function parseCart(value: unknown): CartItem[] {
       qty > MAX_QTY
     )
       continue;
-    const product = getProduct(slug);
-    if (!product || !product.sizes.includes(size as Size)) continue;
+    if (
+      !/^[a-z0-9-]{1,100}$/.test(slug) ||
+      !["XS", "S", "M", "L", "XL"].includes(size)
+    )
+      continue;
     const existing = result.find(
       (line) => line.slug === slug && line.size === size,
     );
@@ -75,8 +78,6 @@ function save(items: CartItem[]) {
   emit();
 }
 export function addCartItem(slug: string, size: Size) {
-  const product = getProduct(slug);
-  if (!product?.sizes.includes(size)) return;
   const items = getCartSnapshot().items;
   const existing = items.find(
     (item) => item.slug === slug && item.size === size,

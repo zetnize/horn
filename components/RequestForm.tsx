@@ -11,6 +11,7 @@ import { Field, type FieldDefinition } from "./Field";
 import { Button } from "./Button";
 import { Header } from "./Header";
 import { Success } from "./Success";
+import { useContent } from "./ContentProvider";
 import { useCart } from "./CartProvider";
 const preorderFields: FieldDefinition[] = [
   {
@@ -61,6 +62,7 @@ const waitlistFields: FieldDefinition[] = [
 ];
 export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
   const cart = useCart();
+  const { settings } = useContent();
   const router = useRouter();
   const preorder = mode === "preorder";
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -142,30 +144,9 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
         <h1 className="page-title">
           {preorder ? "ФОРМА ПРЕДЗАКАЗА" : "ЛИСТ ОЖИДАНИЯ"}
         </h1>
-        {preorder ? (
-          <div className="form-intro">
-            <p>
-              После заполнения формы мы свяжемся с вами для подтверждения заказа
-              и оформления оплаты. В связи с большим количеством обращений время
-              ответа может быть увеличено <strong>до 2 дней</strong> 🤍
-            </p>
-            <p>
-              Мы выпускаем коллекции ограниченными тиражами по предзаказу. Это
-              позволяет нам сосредоточиться на качестве каждой вещи и сохранить
-              эксклюзивность каждой партии 🖇️
-            </p>
-            <p>
-              Срок отправки: 1-5 дней
-              <br />
-              Спасибо за доверие 🩶
-            </p>
-          </div>
-        ) : (
-          <p className="form-intro">
-            Оставьте имя и контакт, чтобы узнать о старте продаж новой коллекции
-            NORTHIA.
-          </p>
-        )}
+        <div className="form-intro editable-copy">
+          {preorder ? settings.preorderIntro : settings.waitlistIntro}
+        </div>
         <form ref={formRef} onSubmit={submit} noValidate aria-busy={pending}>
           {(preorder ? preorderFields : waitlistFields).map((field) => (
             <Field key={field.name} field={field} errors={errors[field.name]} />

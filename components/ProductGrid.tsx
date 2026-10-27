@@ -1,11 +1,14 @@
-import { products } from "@/data/products";
+import { readContent } from "@/lib/server/content";
 import { ProductCard } from "./ProductCard";
-export function ProductGrid() {
+export async function ProductGrid() {
+  const { products } = await readContent();
   return (
     <div className="product-grid">
-      {products.map((product) => (
-        <ProductCard product={product} key={product.slug} />
-      ))}
+      {products
+        .filter((p) => !p.hidden)
+        .map((product) => (
+          <ProductCard product={product} key={product.slug} />
+        ))}
     </div>
   );
 }
