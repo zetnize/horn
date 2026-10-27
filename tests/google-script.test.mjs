@@ -79,6 +79,7 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   const product = products.find((p) => !p.hidden && p.sizes.length);
   assert.ok(product);
   const input = {
+    consent: true, consentVersion: "2026-10-27",
     name: order.fullName, phone: order.phone, contact: order.contact,
     city: order.city, address: order.pickupAddress, comment: order.comment,
     items: [{ slug: product.slug, size: product.sizes[0], qty: 2 }],
@@ -116,4 +117,10 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   assert.equal((await submit(request({ ...input, phone: "bad" }), "preorder")).status, 400);
   assert.equal((await submit(request({ website: "bot" }), "preorder")).status, 200);
   assert.equal(fetchMock.mock.callCount(), before);
+  for (const consent of [undefined, false, "true"]) {
+    assert.equal((await submit(request({ ...input, consent }), "preorder")).status, 400);
+  }
+  assert.equal((await submit(request({ ...input, consentVersion: "old" }), "preorder")).status, 400);
+  assert.equal(fetchMock.mock.callCount(), before);
+  assert.match(sent.comment, /Согласие: 2026-10-27; принято: .*; форма: preorder/);
 });

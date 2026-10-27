@@ -128,6 +128,7 @@ export async function submit(
       const comment = [
           input.comment,
           `Заявка: ${id}`,
+          `Согласие: ${input.consentVersion}; принято: ${new Date().toISOString()}; форма: preorder`,
           `Состав заказа (название / размер / цвет / количество / цена за единицу):\n${items}`,
           `Итого: ${formatPrice(total)}`,
         ]

@@ -1,4 +1,13 @@
 import { z } from "zod";
+import { CONSENT_VERSION } from "@/data/legal";
+const consentFields = {
+  consent: z.literal(true, {
+    error: "Необходимо согласие на обработку данных",
+  }),
+  consentVersion: z.literal(CONSENT_VERSION, {
+    error: "Обновите страницу и ознакомьтесь с актуальным согласием",
+  }),
+};
 const requiredText = (max: number) =>
   z
     .string({ error: "Заполните поле" })
@@ -17,6 +26,7 @@ export const itemSchema = z.object({
     .max(99, "Максимум 99"),
 });
 export const preorderSchema = z.object({
+  ...consentFields,
   name: requiredText(150),
   phone: requiredText(40)
     .regex(/^[+\d\s()\-]+$/, "Допустимы цифры, пробелы, +, скобки и дефисы")
@@ -41,6 +51,7 @@ export const preorderSchema = z.object({
     ),
 });
 export const waitlistSchema = z.object({
+  ...consentFields,
   name: requiredText(150),
   contact: requiredText(150),
   website: z.string().max(500).default(""),

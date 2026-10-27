@@ -29,7 +29,7 @@ export async function appendSheetRow(
   await sheets.spreadsheets.values.append(
     {
       spreadsheetId: sheetId,
-      range: `'${sheet}'!A:${sheet === SHEETS.preorder ? "J" : "C"}`,
+      range: `'${sheet}'!A:${sheet === SHEETS.preorder ? "J" : "D"}`,
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
       requestBody: { values: [row.map(escapeSheetCell)] },

@@ -13,6 +13,8 @@ import { Header } from "./Header";
 import { Success } from "./Success";
 import { useContent } from "./ContentProvider";
 import { useCart } from "./CartProvider";
+import Link from "next/link";
+import { CONSENT_VERSION } from "@/data/legal";
 const preorderFields: FieldDefinition[] = [
   {
     name: "name",
@@ -89,6 +91,8 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
     const values = Object.fromEntries(new FormData(event.currentTarget));
     const parsed = (preorder ? preorderSchema : waitlistSchema).safeParse({
       ...values,
+      consent: values.consent === "on",
+      consentVersion: CONSENT_VERSION,
       ...(preorder ? { items: cart.items } : {}),
     });
     if (!parsed.success) {
@@ -171,6 +175,52 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
               {message}
             </p>
           ) : null}
+          <div className="form-consent">
+            <label>
+              <input
+                type="checkbox"
+                name="consent"
+                required
+                aria-invalid={!!errors.consent}
+                aria-describedby={errors.consent ? "consent-error" : undefined}
+              />
+              <span>
+                Даю{" "}
+                <Link
+                  href="/legal/consent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  согласие на обработку персональных данных
+                </Link>{" "}
+                для рассмотрения заявки и связи по ней.
+              </span>
+            </label>
+            {errors.consent ? (
+              <p id="consent-error" className="form-error" role="alert">
+                {errors.consent[0]}
+              </p>
+            ) : null}
+            <p>
+              <Link
+                href="/legal/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Политика обработки данных
+              </Link>
+              .{" "}
+              <Link
+                href="/legal/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Условия заказа, доставки и возврата
+              </Link>
+              .
+            </p>
+            <p>Тестовый сайт. Используйте вымышленные данные.</p>
+          </div>
           <Button type="submit" variant="primary" disabled={pending}>
             {pending ? "Отправка…" : "ОТПРАВИТЬ"}
           </Button>

@@ -5,6 +5,8 @@ if (process.env.TEST_API_ISOLATED !== "1")
 const base = process.env.TEST_BASE_URL ?? "http://127.0.0.1:3000";
 let sequence = 1;
 const valid = {
+  consent: true,
+  consentVersion: "2026-10-27",
   name: "Тестовый Покупатель",
   phone: "+7 (999) 123-45-67",
   contact: "@northia_test",
@@ -74,7 +76,7 @@ test("honeypot succeeds without credentials or valid customer data", async () =>
 test("valid requests without config fail closed (isolated server only)", async () => {
   for (const [route, data] of [
     ["preorder", { ...valid, price: 1, total: 1, nameOverride: "Fake" }],
-    ["waitlist", { name: "Тест", contact: "@northia_test" }],
+    ["waitlist", { name: "Тест", contact: "@northia_test", consent: true, consentVersion: "2026-10-27" }],
   ]) {
     const response = await post(route, data);
     assert.equal(response.status, 500);
