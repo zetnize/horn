@@ -1031,6 +1031,10 @@ svg {
 .product-card:nth-child(odd) {
   border-right: var(--stroke) solid var(--line);
 }
+.product-card:last-child,
+.product-card:nth-last-child(2):nth-child(odd) {
+  border-bottom: 0;
+}
 .product-card img {
   width: 100%;
   height: auto;
@@ -1068,9 +1072,6 @@ svg {
   margin-top: var(--space-2);
   font-weight: var(--weight-normal);
   line-height: var(--type-card-size-line);
-}
-.drop {
-  margin-top: var(--space-4);
 }
 .drop-copy {
   text-align: center;
