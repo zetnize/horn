@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
 import { formatPrice } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
+import {
+  MAX_IMAGE_BYTES,
+  IMAGE_SIZE_MESSAGE,
+  uploadedImagePath,
+} from "@/lib/admin-upload";
 
 const settingsFields: [keyof Settings, string, boolean?][] = [
   ["heroCaption", "Подпись главного изображения"],
@@ -82,8 +87,8 @@ function Upload({
             const file = e.target.files?.[0];
             e.target.value = "";
             if (!file) return;
-            if (file.size > 8 * 1024 * 1024) {
-              setError("Максимум 8 МБ");
+            if (file.size > MAX_IMAGE_BYTES) {
+              setError(IMAGE_SIZE_MESSAGE);
               return;
             }
             setBusy(true);
@@ -95,9 +100,7 @@ function Upload({
                 headers: { "Content-Type": file.type },
                 body: file,
               });
-              const result = await response.json();
-              if (!response.ok) throw new Error(result.message);
-              onChange(result.path);
+              onChange(await uploadedImagePath(response));
             } catch (err) {
               setError(err instanceof Error ? err.message : "Ошибка загрузки");
             } finally {
@@ -107,7 +110,7 @@ function Upload({
           }}
         />
       </label>
-      <p className="admin-hint">PNG, до 8 МБ. Прозрачный фон сохраняется.</p>
+      <p className="admin-hint">PNG, до 4 МБ. Прозрачный фон сохраняется.</p>
       {busy && <p role="status">Загрузка…</p>}
       {error && (
         <p role="alert" className="form-error">

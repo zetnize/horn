@@ -6,11 +6,12 @@ import { storageRoot } from "@/lib/server/content";
 import { adminResponse, limitedBody } from "@/lib/server/admin-http";
 import { database, databaseEnabled } from "@/lib/server/database";
 import { uploadMedia } from "@/lib/server/storage";
+import { MAX_IMAGE_BYTES, IMAGE_SIZE_MESSAGE } from "@/lib/admin-upload";
 export async function POST(request: Request) {
   if (!sameOrigin(request) || !(await authenticated()))
     return adminResponse({ message: "Требуется вход" }, 403);
   try {
-    const bytes = await limitedBody(request, 8 * 1024 * 1024);
+    const bytes = await limitedBody(request, MAX_IMAGE_BYTES);
     const png = bytes
       .subarray(0, 8)
       .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
@@ -30,9 +31,14 @@ export async function POST(request: Request) {
       await writeFile(path.join(dir, name), bytes, { flag: "wx" });
     }
     return adminResponse({ path: `/media/${name}` });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === "LIMIT")
+      return adminResponse({ message: IMAGE_SIZE_MESSAGE }, 413);
     return adminResponse(
-      { message: "Не удалось загрузить изображение. Максимум 8 МБ." },
+      {
+        message:
+          "Не удалось загрузить изображение. Проверьте PNG (до 4 МБ) и повторите попытку.",
+      },
       400,
     );
   }
