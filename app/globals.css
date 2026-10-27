@@ -53,6 +53,7 @@
   --product-ratio: 5 / 7;
   --card-copy: 6.625rem;
   --motion: 200ms;
+  --scroll-duration: 220ms;
   --menu-offset: clamp(8rem, 26dvh, 11rem);
   --menu-gap: 2.375rem;
   --cart-photo: 26%;

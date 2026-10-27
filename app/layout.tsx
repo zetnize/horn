@@ -5,6 +5,7 @@ import { ContentProvider } from "@/components/ContentProvider";
 import { manrope, onest, unbounded } from "./fonts";
 export const dynamic = "force-dynamic";
 import { CartProvider } from "@/components/CartProvider";
+import { SmoothScroll } from "@/components/SmoothScroll";
 export const metadata: Metadata = {
   title: {
     default: "NORTHIA — born in the mountains",
@@ -40,6 +41,7 @@ export default async function RootLayout({
       className={`${manrope.variable} ${unbounded.variable} ${onest.variable}`}
     >
       <body>
+        <SmoothScroll />
         <ContentProvider value={visible}>
           <CartProvider>
             <div className="shell">
