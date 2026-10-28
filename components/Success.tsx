@@ -16,7 +16,7 @@ export function Success({ waitlist = false, orderedSlugs = [] }: {
     title.current?.focus();
   }, []);
   return (
-    <main id="main" className="success container">
+    <main id="main" className={`success container${waitlist ? "" : " success--preorder"}`}>
       <h1 tabIndex={-1} ref={title}>
         СПАСИБО ЗА ЗАЯВКУ!
       </h1>

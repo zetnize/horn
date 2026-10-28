@@ -103,6 +103,8 @@
   --type-success-title-size: 0.875rem;
   --type-success-copy-size: 0.625rem;
   --type-success-copy-line: 0.6875rem;
+  --type-success-order-copy-size: 0.875rem;
+  --type-success-order-copy-line: 1.25rem;
   --type-breadcrumb-line: 0.5625rem;
 }
 @theme inline {
@@ -709,6 +711,14 @@ svg {
   font-weight: var(--weight-normal);
   font-size: var(--type-success-copy-size);
   line-height: var(--type-success-copy-line);
+}
+.success--preorder p {
+  font-size: var(--type-success-order-copy-size);
+  line-height: var(--type-success-order-copy-line);
+}
+.success--preorder > a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 .success-carousel {
   width: 100%;
