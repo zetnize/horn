@@ -99,6 +99,8 @@
   --type-preorder-intro-line: 1rem;
   --type-action-size: 0.975rem;
   --type-action-line: 2.925rem;
+  --waitlist-button-width: 13.625rem;
+  --waitlist-button-height: 2.875rem;
   --type-checkout-line: 2.375rem;
   --type-details-title-size: 0.7125rem;
   --type-details-line: 1.105rem;
@@ -1257,7 +1259,10 @@ svg {
   font-weight: var(--weight-normal);
 }
 .drop-copy .waitlist-button {
-  margin-top: var(--space-5);
+  width: min(100%, var(--waitlist-button-width));
+  min-height: var(--waitlist-button-height);
+  line-height: var(--leading-tight);
+  margin: var(--space-5) auto 0;
 }
 .footer {
   background: var(--panel);
