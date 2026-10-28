@@ -967,6 +967,17 @@ svg {
   width: var(--logo-width);
   height: auto;
 }
+.scroll-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--paper);
+  transform: translateY(0);
+  transition: transform var(--motion);
+}
+.scroll-header[data-hidden="true"]:not(:focus-within) {
+  transform: translateY(-100%);
+}
 .header-actions {
   display: flex;
   align-items: center;
