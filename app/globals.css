@@ -49,6 +49,7 @@
   --header: 3.9375rem;
   --logo-width: 4.875rem;
   --icon: 1.25rem;
+  --cart-badge: 1.25rem;
   --hero-ratio: 390 / 486;
   --product-ratio: 5 / 7;
   --card-copy: 6.625rem;
@@ -969,6 +970,25 @@ svg {
 .header-actions {
   display: flex;
   align-items: center;
+}
+.header-cart {
+  position: relative;
+}
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: var(--cart-badge);
+  height: var(--cart-badge);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono-sans);
+  font-size: var(--text-xs);
+  line-height: var(--leading-tight);
+  pointer-events: none;
 }
 .editorial-image {
   position: relative;

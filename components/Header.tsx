@@ -4,8 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "./Icons";
 import { Menu } from "./Menu";
+import { useCart } from "./CartProvider";
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { items } = useCart();
+  const count = items.reduce((total, item) => total + item.qty, 0);
   return (
     <>
       <header className="header container">
@@ -20,8 +23,17 @@ export function Header() {
           />
         </Link>
         <nav className="header-actions" aria-label="Основная навигация">
-          <Link href="/cart" className="icon-button" aria-label="Корзина">
+          <Link
+            href="/cart"
+            className="icon-button header-cart"
+            aria-label={count ? `Корзина, количество товаров: ${count}` : "Корзина"}
+          >
             <Icon name="cart" />
+            {count > 0 ? (
+              <span className="cart-badge" aria-hidden="true">
+                {count > 99 ? "99+" : count}
+              </span>
+            ) : null}
           </Link>
           <button
             type="button"
