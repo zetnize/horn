@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { formatPrice, type Product, type Size } from "@/data/products";
 import { useCart } from "./CartProvider";
 import { Button } from "./Button";
@@ -10,15 +10,10 @@ export function ProductDetails({ product }: { product: Product }) {
   const [size, setSize] = useState<Size | null>(null);
   const [invalid, setInvalid] = useState(false);
   const [guide, setGuide] = useState(false);
-  const [added, setAdded] = useState(false);
   const sizesRef = useRef<HTMLDivElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cart = useCart();
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
-    },
-    [],
+  const added = cart.items.some(
+    (item) => item.slug === product.slug && (size === null || item.size === size),
   );
   function add() {
     if (!size) {
@@ -33,9 +28,6 @@ export function ProductDetails({ product }: { product: Product }) {
       return;
     }
     cart.add(product.slug, size);
-    setAdded(true);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setAdded(false), 1500);
   }
   return (
     <>
@@ -54,7 +46,6 @@ export function ProductDetails({ product }: { product: Product }) {
             onChange={(value) => {
               setSize(value);
               setInvalid(false);
-              setAdded(false);
             }}
           />
         </div>
