@@ -19,7 +19,7 @@ export function Header() {
         setHidden(false);
         anchor = position;
       } else if (Math.abs(position - anchor) >= 8) {
-        setHidden(position < anchor);
+        setHidden(position > anchor);
         anchor = position;
       }
     }
