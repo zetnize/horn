@@ -1261,7 +1261,10 @@ svg {
 .drop-copy .waitlist-button {
   width: min(100%, var(--waitlist-button-width));
   min-height: var(--waitlist-button-height);
-  line-height: var(--leading-tight);
+  font-family: var(--font-actay-wide);
+  font-weight: var(--weight-bold);
+  font-size: var(--type-ui-size);
+  line-height: var(--type-ui-line);
   margin: var(--space-5) auto 0;
 }
 .footer {
