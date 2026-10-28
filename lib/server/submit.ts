@@ -11,7 +11,11 @@ import { SheetConfigurationError, SheetRequestError } from "./sheet-errors";
 import { SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
-import { ScriptError, sendScriptOrder } from "./google-script";
+import {
+  ScriptError,
+  sendScriptOrder,
+  sendScriptWaitlist,
+} from "./google-script";
 const MAX_BODY_BYTES = 32_768;
 class BodyError extends Error {}
 async function readBody(request: Request): Promise<unknown> {
@@ -72,7 +76,7 @@ function invalid(error: z.ZodError) {
 export async function submit(
   request: Request,
   mode: "preorder" | "waitlist",
-  saveWaitlist?: (input: WaitlistInput) => Promise<void>,
+  saveWaitlist: (input: WaitlistInput) => Promise<void> = sendScriptWaitlist,
   services = { rateLimit, readContent },
 ) {
   let limit;
@@ -173,7 +177,6 @@ export async function submit(
     }
     const parsed = waitlistSchema.safeParse(body);
     if (!parsed.success) return invalid(parsed.error);
-    if (!saveWaitlist) throw new SheetConfigurationError("missing-env");
     await saveWaitlist(parsed.data);
     return response({ ok: true });
   } catch (error) {

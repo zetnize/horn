@@ -261,6 +261,28 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   assert.equal(fetchMock.mock.callCount(), callsBefore + 1);
   assert.equal(
     (await submit(request(waitlist), "waitlist", undefined, services)).status,
+    200,
+  );
+  const waitingSent = JSON.parse(fetchMock.mock.calls.at(-1).arguments[1].body);
+  assert.deepEqual(waitingSent, {
+    type: "waitlist",
+    name: waitlist.name,
+    contact: waitlist.contact,
+    consentVersion: waitlist.consentVersion,
+    secret: "test-only-secret",
+  });
+  fetchMock.mock.mockImplementation(async () =>
+    Response.json({ success: false, error: "Sheet not found" }),
+  );
+  assert.equal(
+    (await submit(request(waitlist), "waitlist", undefined, services)).status,
+    500,
+  );
+  fetchMock.mock.mockImplementation(async () =>
+    Response.json({ success: false, error: "Invalid fields" }),
+  );
+  assert.equal(
+    (await submit(request(waitlist), "waitlist", undefined, services)).status,
     500,
   );
   fetchMock.mock.mockImplementation(async () =>

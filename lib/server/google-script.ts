@@ -8,6 +8,7 @@ export type ScriptOrder = {
   pickupAddress: string;
   comment: string;
 };
+type ScriptWaitlist = { name: string; contact: string; consentVersion: string };
 
 export class ScriptError extends Error {
   readonly reason:
@@ -33,6 +34,21 @@ export class ScriptError extends Error {
 }
 
 export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
+  return sendScriptRequest(order);
+}
+
+export async function sendScriptWaitlist(input: ScriptWaitlist): Promise<void> {
+  return sendScriptRequest({
+    type: "waitlist",
+    name: input.name,
+    contact: input.contact,
+    consentVersion: input.consentVersion,
+  });
+}
+
+async function sendScriptRequest(
+  order: ScriptOrder | (ScriptWaitlist & { type: "waitlist" }),
+): Promise<void> {
   const endpoint = process.env.GOOGLE_SCRIPT_URL;
   const secret = process.env.GOOGLE_SCRIPT_SECRET;
   if (!endpoint || !secret?.trim()) throw new ScriptError("missing-env");
@@ -45,7 +61,11 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
   if (
     url.protocol !== "https:" ||
     url.hostname !== "script.google.com" ||
-    url.port || url.username || url.password || url.search || url.hash ||
+    url.port ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash ||
     !/^\/macros\/s\/[\w-]+\/exec$/.test(url.pathname)
   )
     throw new ScriptError("invalid-url");
@@ -61,7 +81,10 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
       redirect: "follow",
       signal: AbortSignal.timeout(15_000),
     });
-    if (response.url && new URL(response.url).hostname === "accounts.google.com")
+    if (
+      response.url &&
+      new URL(response.url).hostname === "accounts.google.com"
+    )
       throw new ScriptError("auth-required", response.status);
     if (!response.ok) throw new ScriptError("http-error", response.status);
     let result: unknown;
@@ -91,15 +114,20 @@ export async function sendScriptOrder(order: ScriptOrder): Promise<void> {
     const confirmed =
       data.ok === true || data.success === true || data.status === "success";
     if (
-      !confirmed || data.ok === false || data.success === false || data.error ||
+      !confirmed ||
+      data.ok === false ||
+      data.success === false ||
+      data.error ||
       (data.status !== undefined && data.status !== "success")
     )
       throw new ScriptError("invalid-response", response.status);
   } catch (error) {
     // Do not propagate upstream bodies, URLs, request details or customer data.
     if (error instanceof ScriptError) throw error;
-    if (error instanceof Error &&
-      (error.name === "TimeoutError" || error.name === "AbortError"))
+    if (
+      error instanceof Error &&
+      (error.name === "TimeoutError" || error.name === "AbortError")
+    )
       throw new ScriptError("timeout");
     throw new ScriptError("request-failed");
   }
