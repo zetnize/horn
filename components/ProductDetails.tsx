@@ -35,7 +35,7 @@ export function ProductDetails({ product }: { product: Product }) {
     cart.add(product.slug, size);
     setAdded(true);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setAdded(false), 1500);
+    timer.current = setTimeout(() => setAdded(false), 4000);
   }
   return (
     <>
@@ -66,9 +66,22 @@ export function ProductDetails({ product }: { product: Product }) {
         </button>
         <Button className="add-to-cart" onClick={add}>
           <Icon name="cart" />
-          <span aria-live="polite">{added ? "ДОБАВЛЕНО" : "В КОРЗИНУ"}</span>
+          <span>{added ? "ДОБАВЛЕНО" : "В КОРЗИНУ"}</span>
           <span className="price">{formatPrice(product.price)}</span>
         </Button>
+      </div>
+      <div
+        className="cart-notice"
+        data-visible={added}
+        role="status"
+        aria-atomic="true"
+      >
+        {added ? (
+          <>
+            <Icon name="cart" />
+            <span>Товар добавлен в корзину</span>
+          </>
+        ) : null}
       </div>
       {guide ? (
         <SizeGuideModal type={product.type} onClose={() => setGuide(false)} />
