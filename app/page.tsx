@@ -32,7 +32,7 @@ export default async function Home() {
           />
           <div className="drop-copy">
             <p>{settings.dropCopy}</p>
-            <Link href="/waitlist">лист ожидания</Link>
+            <Link href="/waitlist" className="button waitlist-button">лист ожидания</Link>
           </div>
         </section>
       </main>
