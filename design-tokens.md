@@ -31,3 +31,5 @@
 ## Утверждённая замена семейств
 
 Актуальные шрифты: --font-actay → локальный Manrope Regular 400; --font-actay-wide → локальный Unbounded Bold 700; --font-mono-sans → локальный Onest Medium 500; --font-helvetica → системный Arial. Алиасы оставлены для сохранения архитектуры ролей. Размеры и строки --type-* не изменены. Файлы TTF получены от владельца и подключены next/font/local; прежние заметки об отсутствии файлов относятся к предыдущим этапам.
+
+Уточнение владельца 28 октября 2026: --font-actay и --font-helvetica теперь Montserrat Regular 400 (описания, подписи, размеры, мелкий текст). --font-actay-wide — Unbounded Medium 500 для заголовков и названий моделей; --weight-bold изменён на 500 для существующих ролей Unbounded. Заголовки страниц/каталога/успеха также Unbounded Medium. Цены остаются Onest Medium 500. Файлы Montserrat и его OFL взяты из Montserrat.zip, Unbounded Medium — из ранее предоставленного архива. Размеры и интервалы сохранены.

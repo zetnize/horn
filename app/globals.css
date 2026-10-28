@@ -12,10 +12,10 @@
   --placeholder: #d8d8d8;
   --surround: #e8e8e8;
   --error: #a12222;
-  --font-actay: var(--font-manrope), Arial, system-ui, sans-serif;
+  --font-actay: var(--font-montserrat), Arial, system-ui, sans-serif;
   --font-actay-wide: var(--font-unbounded), Arial, system-ui, sans-serif;
   --font-mono-sans: var(--font-onest), Arial, system-ui, sans-serif;
-  --font-helvetica: Arial, Helvetica, sans-serif;
+  --font-helvetica: var(--font-montserrat), Arial, sans-serif;
   --shell: 26.875rem;
   --gutter: clamp(0.875rem, 4vw, 1.075rem);
   --space-1: 0.25rem;
@@ -40,7 +40,7 @@
   --leading-tight: 1.2;
   --leading-body: 1.35;
   --weight-normal: 400;
-  --weight-bold: 700;
+  --weight-bold: 500;
   --stroke: 1px;
   --focus: 2px;
   --focus-offset: 3px;
@@ -129,6 +129,12 @@ body::-webkit-scrollbar {
 }
 .admin {
   padding-block: var(--space-6);
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-actay-wide);
+  font-weight: var(--weight-medium);
 }
 .admin h1 {
   font-size: var(--text-xl);
@@ -453,7 +459,7 @@ svg {
   align-items: center;
 }
 .page-title {
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay-wide);
   font-size: var(--type-cart-title-size);
   font-weight: var(--weight-medium);
   text-align: center;
@@ -597,7 +603,7 @@ svg {
 .form-page .page-title {
   font-size: var(--type-form-title-size);
   padding-bottom: var(--space-6);
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay-wide);
   font-weight: var(--weight-medium);
   line-height: var(--type-title-line);
 }
@@ -661,7 +667,7 @@ svg {
   padding-bottom: var(--space-16);
 }
 .success h1 {
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay-wide);
   font-size: var(--type-success-title-size);
   font-weight: var(--weight-medium);
   line-height: var(--type-title-line);
@@ -783,7 +789,7 @@ svg {
 }
 .size-fieldset legend {
   width: 100%;
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay);
   margin-bottom: var(--space-4);
   font-weight: var(--weight-medium);
   font-size: var(--type-ui-size);
@@ -851,8 +857,8 @@ svg {
 .add-to-cart {
   margin-top: var(--space-6);
   justify-content: flex-start;
-  font-family: var(--font-mono-sans);
-  font-weight: var(--weight-medium);
+  font-family: var(--font-actay);
+  font-weight: var(--weight-normal);
   font-size: var(--type-action-size);
   line-height: var(--type-action-line);
   padding-block: 0;
@@ -993,7 +999,7 @@ svg {
   display: grid;
   place-items: center;
   color: var(--ink);
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay);
   font-size: var(--cart-badge-text);
   line-height: var(--leading-tight);
   pointer-events: none;
@@ -1040,7 +1046,7 @@ svg {
   font-weight: var(--weight-normal);
 }
 .catalog-title {
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay-wide);
   font-size: var(--type-catalog-size);
   line-height: var(--type-catalog-line);
   font-weight: var(--weight-medium);
@@ -1133,8 +1139,8 @@ svg {
   display: grid;
   gap: var(--space-6);
   margin-top: var(--space-5);
-  font-family: var(--font-actay-wide);
-  font-weight: var(--weight-bold);
+  font-family: var(--font-actay);
+  font-weight: var(--weight-normal);
   font-size: var(--type-contact-size);
   line-height: var(--type-ui-line);
 }
@@ -1185,7 +1191,7 @@ svg {
   overflow-wrap: anywhere;
 }
 .legal-page h1 {
-  font-family: var(--font-mono-sans);
+  font-family: var(--font-actay-wide);
   font-size: var(--text-xl);
   line-height: var(--leading-tight);
 }

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { readContent } from "@/lib/server/content";
 import { ContentProvider } from "@/components/ContentProvider";
-import { manrope, onest, unbounded } from "./fonts";
+import { montserrat, onest, unbounded } from "./fonts";
 export const dynamic = "force-dynamic";
 import { CartProvider } from "@/components/CartProvider";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -38,7 +38,7 @@ export default async function RootLayout({
     <html
       lang="ru"
       data-scroll-behavior="smooth"
-      className={`${manrope.variable} ${unbounded.variable} ${onest.variable}`}
+      className={`${montserrat.variable} ${unbounded.variable} ${onest.variable}`}
     >
       <body>
         <SmoothScroll />
