@@ -64,9 +64,9 @@ export function ProductDetails({ product }: { product: Product }) {
         >
           Размерная сетка
         </button>
-        <Button className="add-to-cart" onClick={add}>
+        <Button className={`add-to-cart${added ? " is-added" : ""}`} onClick={add}>
           <Icon name="cart" />
-          <span aria-live="polite">{added ? "ДОБАВЛЕНО" : "В КОРЗИНУ"}</span>
+          <span aria-live="polite">{added ? "Добавлено" : "В КОРЗИНУ"}</span>
           <span className="price">{formatPrice(product.price)}</span>
         </Button>
       </div>

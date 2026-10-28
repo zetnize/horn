@@ -8,6 +8,7 @@
   --border: #a6a6a6;
   --panel: #f4f4f4;
   --button: #f0eeee;
+  --button-added: #000;
   --placeholder: #d8d8d8;
   --surround: #e8e8e8;
   --error: #a12222;
@@ -858,6 +859,11 @@ svg {
 }
 .add-to-cart .price {
   margin-left: auto;
+}
+.add-to-cart.is-added {
+  background: var(--button-added);
+  border-color: var(--button-added);
+  color: var(--paper);
 }
 .product-accordions {
   padding-top: var(--space-4);
