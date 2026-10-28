@@ -7,7 +7,7 @@ import {
   waitlistSchema,
   type WaitlistInput,
 } from "@/lib/validation";
-import { SheetConfigurationError } from "./sheet-errors";
+import { SheetConfigurationError, SheetRequestError } from "./sheet-errors";
 import { SHEETS } from "./sheet-values";
 import { readContent } from "./content";
 import { rateLimit } from "./rate-limit";
@@ -193,6 +193,9 @@ export async function submit(
       reason,
       status,
       sheet: SHEETS[mode],
+      ...(error instanceof SheetRequestError
+        ? { stage: error.stage, googleReason: error.googleReason }
+        : {}),
     });
     return response(
       {

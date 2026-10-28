@@ -1,7 +1,10 @@
 import "server-only";
-import { auth as googleAuth, sheets as googleSheets } from "googleapis/build/src/apis/sheets/index.js";
+import {
+  auth as googleAuth,
+  sheets as googleSheets,
+} from "googleapis/build/src/apis/sheets/index.js";
 import { escapeSheetCell, SHEETS } from "./sheet-values";
-import { SheetConfigurationError } from "./sheet-errors";
+import { SheetConfigurationError, SheetRequestError } from "./sheet-errors";
 type SheetName = (typeof SHEETS)[keyof typeof SHEETS];
 export async function appendSheetRow(
   sheet: SheetName,
@@ -20,20 +23,25 @@ export async function appendSheetRow(
   });
   const sheets = googleSheets({ version: "v4", auth });
   const options = { timeout: 10_000, retry: false };
-  const metadata = await sheets.spreadsheets.get(
-    { spreadsheetId: sheetId, fields: "sheets.properties.title" },
-    options,
-  );
+  const metadata = await sheets.spreadsheets
+    .get({ spreadsheetId: sheetId, fields: "sheets.properties.title" }, options)
+    .catch((error) => {
+      throw new SheetRequestError(error, "metadata");
+    });
   if (!metadata.data.sheets?.some((tab) => tab.properties?.title === sheet))
     throw new SheetConfigurationError("missing-tab");
-  await sheets.spreadsheets.values.append(
-    {
-      spreadsheetId: sheetId,
-      range: `'${sheet}'!A:${sheet === SHEETS.preorder ? "J" : "D"}`,
-      valueInputOption: "RAW",
-      insertDataOption: "INSERT_ROWS",
-      requestBody: { values: [row.map(escapeSheetCell)] },
-    },
-    options,
-  );
+  await sheets.spreadsheets.values
+    .append(
+      {
+        spreadsheetId: sheetId,
+        range: `'${sheet}'!A:${sheet === SHEETS.preorder ? "J" : "D"}`,
+        valueInputOption: "RAW",
+        insertDataOption: "INSERT_ROWS",
+        requestBody: { values: [row.map(escapeSheetCell)] },
+      },
+      options,
+    )
+    .catch((error) => {
+      throw new SheetRequestError(error, "append");
+    });
 }
