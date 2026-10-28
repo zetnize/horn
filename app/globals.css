@@ -56,8 +56,8 @@
   --card-copy: 6.625rem;
   --motion: 200ms;
   --scroll-duration: 220ms;
-  --menu-offset: clamp(8rem, 26dvh, 11rem);
   --menu-gap: 2.375rem;
+  --menu-height: 42.8125rem;
   --cart-photo: 26%;
   --form-title: clamp(1.25rem, 5vw, 1.5rem);
   --form-control: 2.125rem;
@@ -433,20 +433,27 @@ svg {
 .dialog.menu-dialog {
   width: 100%;
   max-width: var(--shell);
-  height: 100dvh;
+  height: var(--menu-height);
   max-height: 100dvh;
   margin: 0 auto;
 }
 .menu-dialog .dialog-content {
   padding: 0;
-  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.menu-dialog .header {
+  flex-shrink: 0;
 }
 .menu-links {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--menu-gap);
-  padding: var(--menu-offset) var(--gutter) var(--space-10);
+  padding: 0 var(--gutter);
   font-family: var(--font-actay-wide);
   font-size: var(--type-menu-size);
   font-weight: var(--weight-bold);
