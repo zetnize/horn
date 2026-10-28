@@ -172,6 +172,7 @@ export async function submit(
         city: input.city,
         pickupAddress: input.address,
         comment,
+        orderItems: items,
       });
       return response({ ok: true, id });
     }

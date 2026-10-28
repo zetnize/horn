@@ -156,10 +156,11 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
   const sent = JSON.parse(fetchMock.mock.calls.at(-1).arguments[1].body);
   assert.deepEqual(
     Object.keys(sent).sort(),
-    [...Object.keys(order), "secret"].sort(),
+    [...Object.keys(order), "orderItems", "secret"].sort(),
   );
   for (const key of ["fullName", "phone", "contact", "city", "pickupAddress"])
     assert.equal(sent[key], order[key]);
+  assert.equal(sent.orderItems, `${product.name} / ${product.sizes[0]} / ${product.color} / 2 / ${formatPrice(product.price)}`);
   for (const text of [
     order.comment,
     result.id,

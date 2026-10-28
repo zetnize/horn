@@ -7,6 +7,7 @@ export type ScriptOrder = {
   city: string;
   pickupAddress: string;
   comment: string;
+  orderItems?: string;
 };
 type ScriptWaitlist = { name: string; contact: string; consentVersion: string };
 

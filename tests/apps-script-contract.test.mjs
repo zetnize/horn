@@ -34,7 +34,7 @@ test("actual Apps Script accepts website waitlist and legacy order contracts", a
   );
   const info = JSON.parse(context.doGet());
   assert.equal(info.supportsWaitlist, true);
-  assert.equal(info.version, "northia-2026-10-28-waitlist-v1");
+  assert.equal(info.version, "northia-2026-10-28-order-items-v2");
   const previous = [
     process.env.GOOGLE_SCRIPT_URL,
     process.env.GOOGLE_SCRIPT_SECRET,
@@ -91,7 +91,14 @@ test("actual Apps Script accepts website waitlist and legacy order contracts", a
     comment: "",
   });
   assert.equal(rows["Заявки"].length, 1);
-  assert.equal(rows["Заявки"][0].length, 8);
+  assert.equal(rows["Заявки"][0].length, 9);
+  assert.equal(rows["Заявки"][0][8], "");
+  await sendScriptOrder({
+    fullName: "Тест", phone: "+79991234567", contact: "@test",
+    city: "Тест", pickupAddress: "Тест", comment: "Заявка и согласие",
+    orderItems: "=Товар / M / Чёрный / 2 / 4 980 ₽",
+  });
+  assert.equal(rows["Заявки"][1][8], "'=Товар / M / Чёрный / 2 / 4 980 ₽");
   const invalid = JSON.parse(
     context.doPost({
       postData: {

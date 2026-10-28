@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "northia-2026-10-28-waitlist-v1";
+const SCRIPT_VERSION = "northia-2026-10-28-order-items-v2";
 const ORDER_SHEET_NAME = "Заявки";
 const WAITLIST_SHEET_NAME = "Лист ожидания";
 
@@ -49,12 +49,14 @@ function doPost(e) {
     const city = text(data.city);
     const pickupAddress = text(data.pickupAddress);
     const comment = text(data.comment);
+    const orderItems = text(data.orderItems);
+    if (orderItems.length > 2000) return json({ success: false, error: "Invalid fields" });
     if (!fullName || !phone || !city || !pickupAddress || fullName.length > 150 || phone.length > 40 || contact.length > 150 || city.length > 100 || pickupAddress.length > 300 || comment.length > 2000) {
       return json({ success: false, error: "Invalid fields" });
     }
     const sheet = spreadsheet.getSheetByName(ORDER_SHEET_NAME);
     if (!sheet) return json({ success: false, error: "Sheet not found" });
-    sheet.appendRow([new Date(), safe(fullName), safe(phone), safe(contact), safe(city), safe(pickupAddress), safe(comment), "Новая"]);
+    sheet.appendRow([new Date(), safe(fullName), safe(phone), safe(contact), safe(city), safe(pickupAddress), safe(comment), "Новая", safe(orderItems)]);
     return json({ success: true, message: "Application saved" });
   } catch (_) {
     console.error("NORTHIA: request processing failed");

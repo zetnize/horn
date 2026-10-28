@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "./Icons";
@@ -7,32 +7,11 @@ import { Menu } from "./Menu";
 import { useCart } from "./CartProvider";
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
   const { items } = useCart();
   const count = items.reduce((total, item) => total + item.qty, 0);
-  useEffect(() => {
-    let anchor = window.scrollY;
-    function onScroll() {
-      const position = Math.max(0, window.scrollY);
-      if (position <= (headerRef.current?.offsetHeight ?? 0)) {
-        setHidden(false);
-        anchor = position;
-      } else if (Math.abs(position - anchor) >= 8) {
-        setHidden(position > anchor);
-        anchor = position;
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
   return (
     <>
-      <header
-        ref={headerRef}
-        className="header container scroll-header"
-        data-hidden={hidden && !open}
-      >
+      <header className="header container scroll-header">
         <Link href="/" aria-label="NORTHIA — главная">
           <Image
             src="/assets/logo.svg"
