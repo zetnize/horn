@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
 import { formatPrice } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
+import { SuccessCarousel } from "@/components/SuccessCarousel";
 import {
   MAX_IMAGE_BYTES,
   IMAGE_SIZE_MESSAGE,
   uploadedImagePath,
 } from "@/lib/admin-upload";
 
-const settingsFields: [keyof Settings, string, boolean?][] = [
+const settingsFields: [Exclude<keyof Settings, "successCarousel">, string, boolean?][] = [
   ["heroCaption", "Подпись главного изображения"],
   ["heroAlt", "Описание главного изображения (alt)"],
   ["brandCopy", "Текст о бренде", true],
@@ -120,6 +121,53 @@ function Upload({
     </div>
   );
 }
+function SuccessCarouselEditor({ value, onChange, onBusy }: {
+  value: Settings["successCarousel"];
+  onChange: (value: Settings["successCarousel"]) => void;
+  onBusy: (busy: boolean) => void;
+}) {
+  const [preview, setPreview] = useState(false);
+  function update(index: number, patch: Partial<Settings["successCarousel"]["slides"][number]>) {
+    onChange({ ...value, slides: value.slides.map((slide, i) => i === index ? { ...slide, ...patch } : slide) });
+  }
+  function move(index: number, direction: number) {
+    const slides = [...value.slides];
+    const target = index + direction;
+    [slides[index], slides[target]] = [slides[target], slides[index]];
+    onChange({ ...value, slides });
+  }
+  return (
+    <section className="admin-carousel-editor" aria-labelledby="admin-carousel-title">
+      <h2 id="admin-carousel-title">Карусель после заказа</h2>
+      <p className="admin-hint">Показывается под ссылкой «Вернуться на главную» после успешного предзаказа. До 10 слайдов. Изменения появятся на сайте после сохранения.</p>
+      <label className="admin-carousel-toggle">
+        <input type="checkbox" checked={value.enabled} onChange={(event) => onChange({ ...value, enabled: event.target.checked })} />
+        Показывать карусель
+      </label>
+      {value.slides.map((slide, index) => (
+        <fieldset className="admin-carousel-slide" key={index}>
+          <legend>Слайд {index + 1}</legend>
+          <Upload label={`Фото слайда ${index + 1}`} value={slide.image} onChange={(image) => update(index, { image })} onBusy={onBusy} />
+          <TextField label="Описание фото (alt)" value={slide.alt} onChange={(alt) => update(index, { alt })} />
+          <TextField label="Заголовок (необязательно)" value={slide.title} onChange={(title) => update(index, { title })} />
+          <TextField label="Текст кнопки (необязательно)" value={slide.buttonText} onChange={(buttonText) => update(index, { buttonText })} />
+          <TextField label="Адрес кнопки (/product/… или https://…)" value={slide.href} onChange={(href) => update(index, { href })} />
+          <p className="admin-hint">Кнопка видна, если заполнены текст и адрес.</p>
+          <div className="admin-carousel-actions">
+            <button type="button" disabled={index === 0} aria-label={`Поднять слайд ${index + 1}`} onClick={() => move(index, -1)}>Выше</button>
+            <button type="button" disabled={index === value.slides.length - 1} aria-label={`Опустить слайд ${index + 1}`} onClick={() => move(index, 1)}>Ниже</button>
+            <button type="button" aria-label={`Удалить слайд ${index + 1}`} onClick={() => onChange({ ...value, slides: value.slides.filter((_, i) => i !== index) })}>Удалить</button>
+          </div>
+        </fieldset>
+      ))}
+      <button type="button" disabled={value.slides.length >= 10} onClick={() => onChange({ ...value, slides: [...value.slides, {
+        image: "/assets/product-placeholder.svg", alt: "Изображение слайда ожидается", title: "", buttonText: "", href: "",
+      }] })}>Добавить слайд</button>
+      <button type="button" aria-expanded={preview} onClick={() => setPreview(!preview)}>{preview ? "Скрыть превью" : "Предпросмотр карусели"}</button>
+      {preview && (value.enabled && value.slides.length ? <SuccessCarousel config={value} /> : <p role="status">Карусель выключена или список слайдов пуст.</p>)}
+    </section>
+  );
+}
 export function AdminPanel({ initial }: { initial: Content }) {
   const [data, setData] = useState(initial);
   const [selected, setSelected] = useState<number | null>(null);
@@ -157,7 +205,7 @@ export function AdminPanel({ initial }: { initial: Content }) {
     setDirty(true);
     setMessage("");
   }
-  function setting(key: keyof Settings, value: string) {
+  function setting<K extends keyof Settings>(key: K, value: Settings[K]) {
     change((d) => ({ ...d, settings: { ...d.settings, [key]: value } }));
   }
   function product(patch: Partial<ManagedProduct>) {
@@ -265,6 +313,11 @@ export function AdminPanel({ initial }: { initial: Content }) {
                 onChange={(v) => setting(key, v)}
               />
             ))}
+            <SuccessCarouselEditor
+              value={data.settings.successCarousel}
+              onChange={(value) => setting("successCarousel", value)}
+              onBusy={onBusy}
+            />
           </section>
         ) : (
           <section>

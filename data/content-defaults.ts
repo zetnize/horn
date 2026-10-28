@@ -1,5 +1,6 @@
 import { products } from "./products";
 import type { Content } from "@/lib/content-schema";
+import { defaultSuccessCarousel } from "@/lib/content-schema";
 export const defaultContent: Content = {
   revision: 0,
   products: products.map((p) => ({
@@ -11,6 +12,7 @@ export const defaultContent: Content = {
     care: "Информация о составе и уходе пока не предоставлена.",
   })),
   settings: {
+    successCarousel: structuredClone(defaultSuccessCarousel),
     heroImage: "/assets/hero-placeholder.svg",
     heroAlt: "Фотография гор Кавказа — изображение ожидается",
     heroCaption: "[born in the mountains]",

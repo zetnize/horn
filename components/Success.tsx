@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useContent } from "./ContentProvider";
+import { SuccessCarousel } from "./SuccessCarousel";
 export function Success({ waitlist = false }: { waitlist?: boolean }) {
+  const { settings } = useContent();
   const title = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -18,6 +21,7 @@ export function Success({ waitlist = false }: { waitlist?: boolean }) {
           : "В ближайшее время мы свяжемся с вами для оформления заказа"}
       </p>
       <Link href="/">Вернуться на главную</Link>
+      {!waitlist && <SuccessCarousel config={settings.successCarousel} />}
     </main>
   );
 }

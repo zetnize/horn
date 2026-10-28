@@ -30,6 +30,26 @@ export const productSchema = z.object({
   care: text,
   hidden: z.boolean(),
 });
+export const carouselSlideSchema = z.object({
+  image: imagePath,
+  alt: text.max(300),
+  title: z.string().trim().max(150),
+  buttonText: z.string().trim().max(60),
+  href: z.union([
+    link,
+    z.string().regex(/^\/(?!\/)[a-zA-Z0-9/_#?=&%\-]*$/).max(500),
+  ]),
+});
+export const defaultSuccessCarousel = {
+  enabled: true,
+  slides: [1, 2, 3].map((number) => ({
+    image: "/assets/product-placeholder.svg",
+    alt: `Изображение слайда ${number} ожидается`,
+    title: "",
+    buttonText: "",
+    href: "",
+  })),
+};
 export const settingsSchema = z.object({
   heroImage: imagePath,
   heroAlt: text.max(300),
@@ -45,6 +65,12 @@ export const settingsSchema = z.object({
   telegram: link,
   channel: link,
   legalName: text.max(300),
+  successCarousel: z
+    .object({
+      enabled: z.boolean(),
+      slides: z.array(carouselSlideSchema).max(10),
+    })
+    .default(defaultSuccessCarousel),
 });
 export const contentSchema = z.object({
   revision: z.number().int().nonnegative(),
@@ -60,3 +86,4 @@ export const contentSchema = z.object({
 export type Content = z.infer<typeof contentSchema>;
 export type ManagedProduct = z.infer<typeof productSchema>;
 export type Settings = z.infer<typeof settingsSchema>;
+export type CarouselSlide = z.infer<typeof carouselSlideSchema>;
