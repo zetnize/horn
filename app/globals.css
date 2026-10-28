@@ -976,8 +976,8 @@ svg {
 }
 .cart-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: var(--space-2);
+  right: var(--space-2);
   display: grid;
   place-items: center;
   color: var(--ink);
