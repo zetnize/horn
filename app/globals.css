@@ -1270,7 +1270,7 @@ svg {
 .footer {
   background: var(--panel);
   padding-top: var(--space-5);
-  padding-bottom: var(--space-10);
+  padding-bottom: var(--space-5);
 }
 .footer h2 {
   color: var(--muted);
@@ -1302,12 +1302,18 @@ svg {
 .footer-legal {
   display: grid;
   gap: var(--space-1);
-  margin-top: var(--space-8);
+  margin-top: var(--space-4);
   color: var(--subtle);
   font-family: var(--font-helvetica);
   font-weight: var(--weight-normal);
   font-size: var(--text-sm);
   line-height: var(--type-legal-line);
+}
+.footer-legal-row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
 }
 .product-accordions > .accordion:first-child h2 button {
   font-size: var(--type-ui-size);
