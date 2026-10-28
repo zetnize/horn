@@ -152,14 +152,8 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
         <h1 className="page-title">
           {preorder ? "ФОРМА ПРЕДЗАКАЗА" : "ЛИСТ ОЖИДАНИЯ"}
         </h1>
-        <div className="form-intro editable-copy">
-          {preorder
-            ? settings.preorderIntro
-                .split(/(до\s+2\s+дней|ограниченными\s+тиражами)/gi)
-                .map((part, index) =>
-                  index % 2 ? <strong key={index}>{part}</strong> : part,
-                )
-            : settings.waitlistIntro}
+        <div className={`form-intro editable-copy${preorder ? " form-intro--preorder" : ""}`}>
+          {preorder ? settings.preorderIntro : settings.waitlistIntro}
         </div>
         <form ref={formRef} onSubmit={submit} noValidate aria-busy={pending}>
           {(preorder ? preorderFields : waitlistFields).map((field) => (
