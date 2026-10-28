@@ -115,7 +115,7 @@ export function EditorialImage({
         width={390}
         height={486}
         style={placement}
-        sizes="(max-width: 430px) 100vw, 430px"
+        sizes="(max-width: 767px) 100vw, 430px"
         priority={hero}
         onLoad={(event) => {
           const box = src.startsWith("/media/")

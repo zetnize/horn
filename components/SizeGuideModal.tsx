@@ -27,7 +27,7 @@ export function SizeGuideModal({
         src={`/assets/size-${type}.png`}
         width={216}
         height={354}
-        sizes="(max-width: 430px) 90vw, 390px"
+        sizes="(max-width: 767px) 90vw, 390px"
         alt={`Размерная сетка: ${type === "tee" ? "футболка" : type === "hoodie" ? "худи" : "лонгслив"}; размеры изделия в сантиметрах`}
       />
     </Dialog>

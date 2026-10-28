@@ -65,7 +65,7 @@ export function Slider({
               alt={`${name}, фото ${index + 1} — изображение ожидается`}
               width={500}
               height={700}
-              sizes="(max-width: 430px) 100vw, 430px"
+              sizes="(max-width: 767px) 100vw, 430px"
               priority={index === 0}
             />
           </div>
