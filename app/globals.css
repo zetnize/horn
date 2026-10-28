@@ -49,7 +49,6 @@
   --header: 3.9375rem;
   --logo-width: 4.875rem;
   --icon: 1.25rem;
-  --cart-badge: 1rem;
   --cart-badge-text: 0.5rem;
   --hero-ratio: 390 / 486;
   --product-ratio: 5 / 7;
@@ -981,11 +980,7 @@ svg {
   right: 0;
   display: grid;
   place-items: center;
-  width: var(--cart-badge);
-  height: var(--cart-badge);
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  color: var(--ink);
   font-family: var(--font-mono-sans);
   font-size: var(--cart-badge-text);
   line-height: var(--leading-tight);
