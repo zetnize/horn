@@ -71,6 +71,7 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [orderedSlugs, setOrderedSlugs] = useState<string[]>([]);
   const lock = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
@@ -101,6 +102,7 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
     }
     lock.current = true;
     setPending(true);
+    const submittedSlugs = preorder ? cart.items.map((item) => item.slug) : [];
     try {
       const response = await fetch(`/api/${mode}`, {
         method: "POST",
@@ -119,6 +121,7 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
         );
         return;
       }
+      setOrderedSlugs(submittedSlugs);
       setSuccess(true);
       if (preorder) cart.clear();
     } catch {
@@ -130,7 +133,8 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
       lock.current = false;
     }
   }
-  if (success) return <Success waitlist={!preorder} />;
+  if (success)
+    return <Success waitlist={!preorder} orderedSlugs={orderedSlugs} />;
   if (preorder && (!cart.ready || !cart.items.length))
     return (
       <>

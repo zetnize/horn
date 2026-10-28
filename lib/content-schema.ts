@@ -42,6 +42,7 @@ export const carouselSlideSchema = z.object({
 });
 export const defaultSuccessCarousel = {
   enabled: true,
+  useCatalog: true,
   slides: [1, 2, 3].map((number) => ({
     image: "/assets/product-placeholder.svg",
     alt: `Изображение слайда ${number} ожидается`,
@@ -68,6 +69,7 @@ export const settingsSchema = z.object({
   successCarousel: z
     .object({
       enabled: z.boolean(),
+      useCatalog: z.boolean().default(true),
       slides: z.array(carouselSlideSchema).max(10),
     })
     .default(defaultSuccessCarousel),

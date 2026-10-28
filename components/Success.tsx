@@ -3,8 +3,13 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useContent } from "./ContentProvider";
 import { SuccessCarousel } from "./SuccessCarousel";
-export function Success({ waitlist = false }: { waitlist?: boolean }) {
-  const { settings } = useContent();
+import { carouselProducts } from "@/lib/carousel-products";
+export function Success({ waitlist = false, orderedSlugs = [] }: {
+  waitlist?: boolean;
+  orderedSlugs?: string[];
+}) {
+  const { settings, products } = useContent();
+  const carousel = carouselProducts(settings.successCarousel, products, orderedSlugs);
   const title = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -21,7 +26,7 @@ export function Success({ waitlist = false }: { waitlist?: boolean }) {
           : "В ближайшее время мы свяжемся с вами для оформления заказа"}
       </p>
       <Link href="/">Вернуться на главную</Link>
-      {!waitlist && <SuccessCarousel config={settings.successCarousel} />}
+      {!waitlist && <SuccessCarousel config={carousel} />}
     </main>
   );
 }

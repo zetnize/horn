@@ -7,6 +7,7 @@ import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
 import { formatPrice } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
 import { SuccessCarousel } from "@/components/SuccessCarousel";
+import { carouselProducts } from "@/lib/carousel-products";
 import {
   MAX_IMAGE_BYTES,
   IMAGE_SIZE_MESSAGE,
@@ -121,8 +122,9 @@ function Upload({
     </div>
   );
 }
-function SuccessCarouselEditor({ value, onChange, onBusy }: {
+function SuccessCarouselEditor({ value, products, onChange, onBusy }: {
   value: Settings["successCarousel"];
+  products: ManagedProduct[];
   onChange: (value: Settings["successCarousel"]) => void;
   onBusy: (busy: boolean) => void;
 }) {
@@ -144,7 +146,12 @@ function SuccessCarouselEditor({ value, onChange, onBusy }: {
         <input type="checkbox" checked={value.enabled} onChange={(event) => onChange({ ...value, enabled: event.target.checked })} />
         Показывать карусель
       </label>
-      {value.slides.map((slide, index) => (
+      <label className="admin-carousel-toggle">
+        <input type="checkbox" checked={value.useCatalog} onChange={(event) => onChange({ ...value, useCatalog: event.target.checked })} />
+        Показывать другие товары каталога
+      </label>
+      {value.useCatalog && <p className="admin-hint">Фото, названия и ссылки берутся из раздела «Товары». Заказанные модели и скрытые товары исключаются автоматически. Порядок — как в каталоге, до 10 товаров. В предпросмотре показан каталог без исключений.</p>}
+      {!value.useCatalog && value.slides.map((slide, index) => (
         <fieldset className="admin-carousel-slide" key={index}>
           <legend>Слайд {index + 1}</legend>
           <Upload label={`Фото слайда ${index + 1}`} value={slide.image} onChange={(image) => update(index, { image })} onBusy={onBusy} />
@@ -160,11 +167,11 @@ function SuccessCarouselEditor({ value, onChange, onBusy }: {
           </div>
         </fieldset>
       ))}
-      <button type="button" disabled={value.slides.length >= 10} onClick={() => onChange({ ...value, slides: [...value.slides, {
+      {!value.useCatalog && <button type="button" disabled={value.slides.length >= 10} onClick={() => onChange({ ...value, slides: [...value.slides, {
         image: "/assets/product-placeholder.svg", alt: "Изображение слайда ожидается", title: "", buttonText: "", href: "",
-      }] })}>Добавить слайд</button>
+      }] })}>Добавить слайд</button>}
       <button type="button" aria-expanded={preview} onClick={() => setPreview(!preview)}>{preview ? "Скрыть превью" : "Предпросмотр карусели"}</button>
-      {preview && (value.enabled && value.slides.length ? <SuccessCarousel config={value} /> : <p role="status">Карусель выключена или список слайдов пуст.</p>)}
+      {preview && (value.enabled && carouselProducts(value, products, []).slides.length ? <SuccessCarousel config={carouselProducts(value, products, [])} /> : <p role="status">Карусель выключена или список слайдов пуст.</p>)}
     </section>
   );
 }
@@ -315,6 +322,7 @@ export function AdminPanel({ initial }: { initial: Content }) {
             ))}
             <SuccessCarouselEditor
               value={data.settings.successCarousel}
+              products={data.products}
               onChange={(value) => setting("successCarousel", value)}
               onBusy={onBusy}
             />

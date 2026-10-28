@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { settingsSchema, carouselSlideSchema } from "../lib/content-schema.ts";
 import { defaultContent } from "../data/content-defaults.ts";
+import { carouselProducts } from "../lib/carousel-products.ts";
 import { PGlite } from "@electric-sql/pglite";
 import { createSql } from "../lib/server/sql.ts";
 import { readDatabaseContent, saveDatabaseContent } from "../lib/server/db-content.ts";
@@ -33,14 +34,35 @@ test("carousel saves and reloads in isolated PostgreSQL without a schema migrati
     const sql = createSql((text, values) => db.query(text, values));
     const content = await readDatabaseContent(sql);
     assert.equal(content.settings.successCarousel.slides.length, 3);
-    content.settings.successCarousel = { enabled: true, slides: [
+    content.settings.successCarousel = { enabled: true, useCatalog: false, slides: [
       { ...successCarousel.slides[1], title: "Второй", buttonText: "Каталог", href: "/#catalog" },
       { ...successCarousel.slides[0], title: "Первый" },
     ] };
     await saveDatabaseContent(content, sql);
     const saved = await readDatabaseContent(sql);
     assert.deepEqual(saved.settings.successCarousel, content.settings.successCarousel);
-    await saveDatabaseContent({ ...saved, settings: { ...saved.settings, successCarousel: { enabled: false, slides: [] } } }, sql);
-    assert.deepEqual((await readDatabaseContent(sql)).settings.successCarousel, { enabled: false, slides: [] });
+    await saveDatabaseContent({ ...saved, settings: { ...saved.settings, successCarousel: { enabled: false, useCatalog: true, slides: [] } } }, sql);
+    assert.deepEqual((await readDatabaseContent(sql)).settings.successCarousel, { enabled: false, useCatalog: true, slides: [] });
   } finally { await db.close(); }
+});
+
+test("catalog recommendations exclude ordered models and hidden products before limiting", () => {
+  const config = defaultContent.settings.successCarousel;
+  const product = defaultContent.products[0];
+  const products = Array.from({ length: 15 }, (_, index) => ({
+    ...product, slug: `model-${index}`, hidden: index === 1,
+  }));
+  const submitted = [{ slug: "model-0", size: "S" }, { slug: "model-0", size: "M" }, { slug: "model-2", size: "L" }];
+  const orderedSlugs = submitted.map((item) => item.slug);
+  submitted.length = 0; // The cart is cleared after successful submission.
+  const result = carouselProducts(config, products, orderedSlugs);
+  assert.equal(result.slides.length, 10);
+  assert.deepEqual(result.slides.map((slide) => slide.href), Array.from({ length: 10 }, (_, index) => `/product/model-${index + 3}`));
+  assert.equal(result.slides[0].image, product.images[0]);
+  assert.equal(result.slides[0].title, product.name);
+  assert.equal(carouselProducts(config, products, products.map((item) => item.slug)).slides.length, 0);
+  assert.equal(carouselProducts(config, [products[3]], []).slides.length, 1);
+  assert.equal(carouselProducts({ ...config, enabled: false }, products, []).enabled, false);
+  const manual = { ...config, useCatalog: false };
+  assert.equal(carouselProducts(manual, products, orderedSlugs), manual);
 });
