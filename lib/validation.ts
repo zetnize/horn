@@ -54,6 +54,8 @@ export const waitlistSchema = z.object({
   ...consentFields,
   name: requiredText(150),
   contact: requiredText(150),
+  phone: z.union([preorderSchema.shape.phone, z.literal("")]).default(""),
+  comment: preorderSchema.shape.comment,
   website: z.string().max(500).default(""),
 });
 export type PreorderInput = z.infer<typeof preorderSchema>;

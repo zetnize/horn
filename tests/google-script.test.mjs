@@ -269,6 +269,8 @@ test("Apps Script transport and real preorder handler (network fully mocked)", a
     type: "waitlist",
     name: waitlist.name,
     contact: waitlist.contact,
+    phone: "",
+    comment: "",
     consentVersion: waitlist.consentVersion,
     secret: "test-only-secret",
   });

@@ -34,7 +34,7 @@ test("actual Apps Script accepts website waitlist and legacy order contracts", a
   );
   const info = JSON.parse(context.doGet());
   assert.equal(info.supportsWaitlist, true);
-  assert.equal(info.version, "northia-2026-10-28-order-items-v2");
+  assert.equal(info.version, "northia-2026-10-29-waitlist-fields-v3");
   const previous = [
     process.env.GOOGLE_SCRIPT_URL,
     process.env.GOOGLE_SCRIPT_SECRET,
@@ -65,6 +65,8 @@ test("actual Apps Script accepts website waitlist and legacy order contracts", a
     body: JSON.stringify({
       name: "Тест",
       contact: "@test",
+      phone: "+79991234567",
+      comment: "=Тестовый комментарий",
       consent: true,
       consentVersion: CONSENT_VERSION,
     }),
@@ -77,7 +79,9 @@ test("actual Apps Script accepts website waitlist and legacy order contracts", a
   });
   assert.equal(response.status, 200);
   assert.equal(rows["Лист ожидания"].length, 1);
-  assert.equal(rows["Лист ожидания"][0].length, 4);
+  assert.equal(rows["Лист ожидания"][0].length, 6);
+  assert.equal(rows["Лист ожидания"][0][4], "'+79991234567");
+  assert.equal(rows["Лист ожидания"][0][5], "'=Тестовый комментарий");
   assert.equal(rows["Лист ожидания"][0][1], "Тест");
   assert.equal(rows["Лист ожидания"][0][2], "'@test");
   assert.ok(rows["Лист ожидания"][0][3].includes(CONSENT_VERSION));

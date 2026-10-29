@@ -61,6 +61,8 @@ const waitlistFields: FieldDefinition[] = [
     required: true,
   },
   preorderFields[2],
+  { ...preorderFields[1], required: false },
+  preorderFields[5],
 ];
 export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
   const cart = useCart();

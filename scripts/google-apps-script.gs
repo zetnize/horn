@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "northia-2026-10-28-order-items-v2";
+const SCRIPT_VERSION = "northia-2026-10-29-waitlist-fields-v3";
 const ORDER_SHEET_NAME = "Заявки";
 const WAITLIST_SHEET_NAME = "Лист ожидания";
 
@@ -29,8 +29,10 @@ function doPost(e) {
     if (type === "waitlist") {
       const name = text(data.name ?? data.fullName);
       const contact = text(data.contact);
+      const phone = text(data.phone);
+      const comment = text(data.comment);
       const consentVersion = text(data.consentVersion);
-      if (!name || !contact || name.length > 150 || contact.length > 150 || consentVersion.length > 100) {
+      if (!name || !contact || name.length > 150 || contact.length > 150 || consentVersion.length > 100 || comment.length > 2000 || phone.length > 40 || (phone && (!/^[+\d\s()\-]+$/.test(phone) || phone.replace(/\D/g, "").length < 7 || phone.replace(/\D/g, "").length > 15))) {
         return json({ success: false, error: "Invalid fields" });
       }
       const sheet = spreadsheet.getSheetByName(WAITLIST_SHEET_NAME);
@@ -39,7 +41,7 @@ function doPost(e) {
       const consent = consentVersion
         ? "Версия согласия: " + consentVersion + "; получено сервером: " + receivedAt.toISOString()
         : "Версия согласия не передана";
-      sheet.appendRow([receivedAt, safe(name), safe(contact), safe(consent)]);
+      sheet.appendRow([receivedAt, safe(name), safe(contact), safe(consent), safe(phone), safe(comment)]);
       return json({ success: true, message: "Waitlist application saved" });
     }
 

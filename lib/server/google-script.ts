@@ -9,7 +9,7 @@ export type ScriptOrder = {
   comment: string;
   orderItems?: string;
 };
-type ScriptWaitlist = { name: string; contact: string; consentVersion: string };
+type ScriptWaitlist = { name: string; contact: string; phone: string; comment: string; consentVersion: string };
 
 export class ScriptError extends Error {
   readonly reason:
@@ -43,6 +43,8 @@ export async function sendScriptWaitlist(input: ScriptWaitlist): Promise<void> {
     type: "waitlist",
     name: input.name,
     contact: input.contact,
+    phone: input.phone,
+    comment: input.comment,
     consentVersion: input.consentVersion,
   });
 }
