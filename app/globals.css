@@ -645,7 +645,7 @@ svg {
 .form-intro p + p {
   margin-top: var(--space-3);
 }
-.form-intro--preorder {
+.form-intro {
   font-size: var(--type-preorder-intro-size);
   line-height: var(--type-preorder-intro-line);
 }
