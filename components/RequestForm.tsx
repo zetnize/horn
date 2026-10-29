@@ -219,7 +219,7 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
               </Link>
               .
             </p>
-            <p>Тестовый сайт. Используйте вымышленные данные.</p>
+            {preorder && <p>Тестовый сайт. Используйте вымышленные данные.</p>}
           </div>
           <Button type="submit" variant="primary" disabled={pending}>
             {pending ? "Отправка…" : "ОТПРАВИТЬ"}
