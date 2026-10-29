@@ -708,8 +708,8 @@ svg {
   margin-top: var(--space-5);
   font-family: var(--font-actay);
   font-weight: var(--weight-normal);
-  font-size: var(--type-success-copy-size);
-  line-height: var(--type-success-copy-line);
+  font-size: var(--type-success-order-copy-size);
+  line-height: var(--type-success-order-copy-line);
 }
 .success > a {
   display: inline-block;
@@ -720,11 +720,7 @@ svg {
   font-size: var(--type-success-copy-size);
   line-height: var(--type-success-copy-line);
 }
-.success--preorder p {
-  font-size: var(--type-success-order-copy-size);
-  line-height: var(--type-success-order-copy-line);
-}
-.success--preorder > a {
+.success > a {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
