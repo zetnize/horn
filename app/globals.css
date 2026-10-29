@@ -62,6 +62,8 @@
   --form-title: clamp(1.25rem, 5vw, 1.5rem);
   --form-control: 2.125rem;
   --success-top: clamp(6rem, 30dvh, 8rem);
+  --success-waitlist-image-width: 22.0625rem;
+  --success-waitlist-image-ratio: 353 / 525;
   --carousel-width: 22.5rem;
   --carousel-ratio: 4 / 5;
   --carousel-card-width: 84%;
@@ -723,6 +725,14 @@ svg {
 .success > a {
   text-decoration: underline;
   text-underline-offset: 0.2em;
+}
+.success-waitlist-image {
+  display: block;
+  width: min(100%, var(--success-waitlist-image-width));
+  height: auto;
+  aspect-ratio: var(--success-waitlist-image-ratio);
+  object-fit: cover;
+  margin: var(--space-12) auto 0;
 }
 .success-carousel {
   width: 100%;
