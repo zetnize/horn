@@ -1,6 +1,6 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { getImageProps } from "next/image";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 type ImageBounds = {
   width: number;
   height: number;
@@ -67,18 +67,29 @@ function visibleBounds(image: HTMLImageElement): ImageBounds {
 export function EditorialImage({
   caption,
   src,
+  desktopSrc,
   alt,
   hero = false,
 }: {
   caption?: string;
   src: string;
+  desktopSrc?: string;
   alt: string;
   hero?: boolean;
 }) {
   const frame = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const bounds = useRef<ImageBounds | null>(null);
   const [placement, setPlacement] = useState<CSSProperties>();
-  function fitImage(box: ImageBounds) {
+  const imageProps = {
+    alt,
+    width: 390,
+    height: 486,
+    sizes: "(min-width: 1024px) 100vw, (max-width: 767px) 100vw, 430px",
+  };
+  const { props: mobile } = getImageProps({ ...imageProps, src, loading: hero ? "eager" : "lazy", fetchPriority: hero ? "high" : undefined });
+  const desktop = desktopSrc ? getImageProps({ ...imageProps, src: desktopSrc, sizes: "100vw" }).props : undefined;
+  const fitImage = useCallback((box: ImageBounds) => {
     const node = frame.current;
     if (!node || !box.cropWidth || !box.cropHeight) return;
     const width = node.clientWidth,
@@ -94,44 +105,41 @@ export function EditorialImage({
       objectFit: "fill",
       maxWidth: "none",
     });
-  }
+  }, []);
+  const fitLoadedImage = useCallback((image: HTMLImageElement) => {
+    if (!image.naturalWidth || !image.currentSrc) return;
+    const url = new URL(image.currentSrc);
+    const uploaded = (url.searchParams.get("url") ?? url.pathname).startsWith("/media/");
+    frame.current?.classList.toggle("uploaded-image", uploaded);
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+    const box = uploaded ? visibleBounds(image) : {
+      width, height, x: 0, y: 0, cropWidth: width, cropHeight: height,
+    };
+    bounds.current = box;
+    fitImage(box);
+  }, [fitImage]);
   useEffect(() => {
     const node = frame.current;
     if (!node) return;
+    const image = imageRef.current;
+    if (image?.complete) fitLoadedImage(image);
     const observer = new ResizeObserver(() => {
       if (bounds.current) fitImage(bounds.current);
     });
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [fitImage, fitLoadedImage]);
   return (
     <div
       ref={frame}
-      className={`editorial-image ${hero ? "hero" : "drop-image"} ${src.startsWith("/media/") ? "uploaded-image" : ""}`}
+      className={`editorial-image ${hero ? "hero" : "drop-image"}`}
+      data-desktop-image={desktopSrc || undefined}
     >
-      <Image
-        src={src}
-        alt={alt}
-        width={390}
-        height={486}
-        style={placement}
-        sizes="(min-width: 1024px) 100vw, (max-width: 767px) 100vw, 430px"
-        priority={hero}
-        onLoad={(event) => {
-          const box = src.startsWith("/media/")
-            ? visibleBounds(event.currentTarget)
-            : {
-                width: event.currentTarget.naturalWidth,
-                height: event.currentTarget.naturalHeight,
-                x: 0,
-                y: 0,
-                cropWidth: event.currentTarget.naturalWidth,
-                cropHeight: event.currentTarget.naturalHeight,
-              };
-          bounds.current = box;
-          fitImage(box);
-        }}
-      />
+      <picture>
+        {desktop && <source media="(min-width: 1024px)" srcSet={desktop.srcSet ?? desktop.src} sizes={desktop.sizes} />}
+        <img {...mobile} alt={alt} ref={imageRef} style={{ ...mobile.style, ...placement }} onLoad={(event) => fitLoadedImage(event.currentTarget)} />
+      </picture>
       {caption === undefined ? null : <p>{caption}</p>}
     </div>
   );

@@ -1659,7 +1659,8 @@ svg {
     overflow-wrap: anywhere;
   }
 
-  .drop-image:has(img[src="/assets/hero-placeholder.svg"]) p {
+  .drop-image[data-desktop-image="/assets/hero-placeholder.svg"] p,
+  .drop-image:not([data-desktop-image]):has(img[src="/assets/hero-placeholder.svg"]) p {
     color: var(--ink);
   }
 

@@ -13,7 +13,7 @@ export default async function Home() {
       <main id="main">
         <h1 className="sr-only">NORTHIA — born in the mountains</h1>
         <div className="home-lead">
-          <EditorialImage src={settings.heroImage} alt={settings.heroAlt} hero />
+          <EditorialImage src={settings.heroImage} desktopSrc={settings.heroDesktopImage} alt={settings.heroAlt} hero />
           <div className="home-lead-copy">
             <p className="hero-caption">{settings.heroCaption}</p>
             <p className="brand-copy">{settings.brandCopy}</p>
@@ -33,6 +33,7 @@ export default async function Home() {
           <EditorialImage
             caption={settings.dropCaption}
             src={settings.dropImage}
+            desktopSrc={settings.dropDesktopImage}
             alt={settings.dropAlt}
           />
           <div className="drop-copy">

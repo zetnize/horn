@@ -14,12 +14,14 @@ export const defaultContent: Content = {
   settings: {
     successCarousel: structuredClone(defaultSuccessCarousel),
     heroImage: "/assets/hero-placeholder.svg",
+    heroDesktopImage: "",
     heroAlt: "Фотография гор Кавказа — изображение ожидается",
     heroCaption: "[born in the mountains]",
     brandCopy:
       "NORTHIA — бренд одежды, вдохновлённый культурой и духом Кавказа. Мы соединяем традиции с современным стилем, создавая вещи с характером, смыслом и вниманием к деталям.",
     catalogTitle: "BASE DROP>",
     dropImage: "/assets/hero-placeholder.svg",
+    dropDesktopImage: "",
     dropAlt: "Новая коллекция NORTHIA — изображение ожидается",
     dropCaption: "[drop 5] soon...",
     dropCopy:

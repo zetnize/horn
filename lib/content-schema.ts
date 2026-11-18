@@ -53,11 +53,13 @@ export const defaultSuccessCarousel = {
 };
 export const settingsSchema = z.object({
   heroImage: imagePath,
+  heroDesktopImage: imagePath.or(z.literal("")).default(""),
   heroAlt: text.max(300),
   heroCaption: text.max(200),
   brandCopy: text,
   catalogTitle: text.max(200),
   dropImage: imagePath,
+  dropDesktopImage: imagePath.or(z.literal("")).default(""),
   dropAlt: text.max(300),
   dropCaption: text.max(200),
   dropCopy: text,

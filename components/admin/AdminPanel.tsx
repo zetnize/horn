@@ -66,11 +66,13 @@ function Upload({
   value,
   onChange,
   onBusy,
+  onClear,
 }: {
   label: string;
   value: string;
   onChange: (path: string) => void;
   onBusy: (busy: boolean) => void;
+  onClear?: () => void;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -112,6 +114,9 @@ function Upload({
           }}
         />
       </label>
+      {onClear && value && (
+        <button type="button" onClick={onClear}>Использовать мобильное фото</button>
+      )}
       <p className="admin-hint">PNG, до 4 МБ. Прозрачный фон сохраняется.</p>
       {busy && <p role="status">Загрузка…</p>}
       {error && (
@@ -300,17 +305,32 @@ export function AdminPanel({ initial }: { initial: Content }) {
           <section>
             <h2>Содержимое сайта</h2>
             <Upload
-              label="Главное изображение"
+              label="Главное изображение для телефона и планшета"
               value={data.settings.heroImage}
               onChange={(p) => setting("heroImage", p)}
               onBusy={onBusy}
             />
             <Upload
-              label="Изображение новой коллекции"
+              label="Главное изображение для компьютера"
+              value={data.settings.heroDesktopImage}
+              onChange={(p) => setting("heroDesktopImage", p)}
+              onClear={() => setting("heroDesktopImage", "")}
+              onBusy={onBusy}
+            />
+            <Upload
+              label="Изображение новой коллекции для телефона и планшета"
               value={data.settings.dropImage}
               onChange={(p) => setting("dropImage", p)}
               onBusy={onBusy}
             />
+            <Upload
+              label="Изображение новой коллекции для компьютера"
+              value={data.settings.dropDesktopImage}
+              onChange={(p) => setting("dropDesktopImage", p)}
+              onClear={() => setting("dropDesktopImage", "")}
+              onBusy={onBusy}
+            />
+            <p className="admin-hint">Фото для компьютера показывается от 1024 px. Если поле пустое, используется мобильное фото.</p>
             {settingsFields.map(([key, label, multiline]) => (
               <TextField
                 key={key}
