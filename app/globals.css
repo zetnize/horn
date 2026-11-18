@@ -841,7 +841,6 @@ svg {
   position: absolute;
   inset: var(--space-6) auto auto var(--gutter);
   z-index: 2;
-  background: var(--paper);
 }
 .slider-track {
   display: flex;
