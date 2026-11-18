@@ -22,6 +22,7 @@ export function ProductCard({ product }: { product: Product }) {
             <span key={size}>{size}</span>
           ))}
         </p>
+        <p className="card-shipping">Срок отправки: {product.shipping}</p>
       </div>
     </Link>
   );

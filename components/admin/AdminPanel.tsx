@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
-import { formatPrice } from "@/data/products";
+import { DEFAULT_SHIPPING, formatPrice } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
 import { SuccessCarousel } from "@/components/SuccessCarousel";
 import { carouselProducts } from "@/lib/carousel-products";
@@ -339,7 +339,7 @@ export function AdminPanel({ initial }: { initial: Content }) {
                   price: 4980,
                   sizes: ["S", "M"],
                   color: "молочный",
-                  shipping: "3-5 дней",
+                  shipping: DEFAULT_SHIPPING,
                   type: "tee",
                   images: ["/assets/product-placeholder.svg"],
                   description: "Добавьте описание товара.",

@@ -13,6 +13,7 @@ export type Product = {
 };
 const missingDescription = "Описание товара пока не предоставлено.";
 const placeholder = "/assets/product-placeholder.svg";
+export const DEFAULT_SHIPPING = "10-15 дней";
 export const products: readonly Product[] = [
   {
     slug: "tee-iron-milk",
@@ -21,7 +22,7 @@ export const products: readonly Product[] = [
     sizes: ["XS", "S", "M", "XL"],
     color: "молочный",
     type: "tee",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: Array.from({ length: 6 }, () => placeholder),
     description:
       "Футболка «ИРОН» молочного цвета свободного силуэта в стиле oversize. На груди минималистичная вышивка, на спине принт шелкографией. Лаконичный дизайн с акцентом на культурную идентичность. Выполнена из двухниточного трикотажного полотна.",
@@ -33,7 +34,7 @@ export const products: readonly Product[] = [
     sizes: ["S", "M", "L", "XL"],
     color: "голубой",
     type: "tee",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
@@ -44,7 +45,7 @@ export const products: readonly Product[] = [
     sizes: ["XS", "S"],
     color: "серый",
     type: "hoodie",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
@@ -55,7 +56,7 @@ export const products: readonly Product[] = [
     sizes: ["S"],
     color: "чёрный",
     type: "tee",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
@@ -66,7 +67,7 @@ export const products: readonly Product[] = [
     sizes: ["S", "M", "L", "XL"],
     color: "молочный",
     type: "tee",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
@@ -77,7 +78,7 @@ export const products: readonly Product[] = [
     sizes: ["XS", "S", "M"],
     color: "молочный",
     type: "longsleeve",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
@@ -88,7 +89,7 @@ export const products: readonly Product[] = [
     sizes: ["XS", "S"],
     color: "чёрный",
     type: "longsleeve",
-    shipping: "3-5 дней",
+    shipping: DEFAULT_SHIPPING,
     images: [placeholder],
     description: missingDescription,
   },
