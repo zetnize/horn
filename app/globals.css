@@ -1445,10 +1445,11 @@ svg {
 
 @media (min-width: 1024px) {
   :root {
-    --desktop-shell: 80rem;
-    --desktop-gutter: clamp(var(--space-8), 4vw, var(--space-14));
+    --desktop-content: 110rem;
+    --desktop-gutter: max(clamp(var(--space-6), 4vw, var(--space-20)), (100% - var(--desktop-content)) / 2);
     --desktop-gap: clamp(var(--space-6), 4vw, var(--space-16));
     --desktop-header: 4.5rem;
+    --desktop-breadcrumb: 3.75rem;
     --desktop-form-width: 36rem;
     --desktop-summary-width: 24rem;
     --desktop-cart-photo: 7rem;
@@ -1458,15 +1459,23 @@ svg {
     --desktop-hero-scrim: rgb(27 30 27 / 80%);
   }
 
-  .shell:has(> .scroll-header, > .success) {
+  body {
+    background: var(--paper);
+  }
+
+  .shell {
     --gutter: var(--desktop-gutter);
-    max-width: var(--desktop-shell);
+    max-width: none;
     display: flex;
     flex-direction: column;
   }
 
   .shell > main {
     flex: 1;
+  }
+
+  .container {
+    max-width: none;
   }
 
   .desktop-only {
@@ -1543,8 +1552,9 @@ svg {
     justify-self: start;
     display: grid;
     gap: var(--space-4);
-    width: min(46%, 35rem);
-    padding: var(--space-6) 0 var(--space-6) var(--gutter);
+    width: min(46% - var(--gutter), 35rem);
+    margin-inline-start: var(--gutter);
+    padding-block: var(--space-6);
     color: var(--paper);
     overflow-wrap: anywhere;
   }
@@ -1662,19 +1672,28 @@ svg {
   }
 
   .breadcrumb {
-    padding-block: var(--space-5);
+    display: flex;
+    align-items: center;
+    min-height: var(--desktop-breadcrumb);
     font-size: var(--text-base);
   }
 
   .product-layout {
+    --gallery-height: max(var(--control), 100dvh - var(--desktop-header) - var(--desktop-breadcrumb) - var(--space-4));
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: var(--desktop-gap);
     padding: 0 var(--gutter) var(--space-16);
     align-items: start;
   }
 
-  .slider--with-thumbnails {
+  .product-layout .slider {
+    --gallery-rail: 0rem;
+    width: min(100%, var(--gallery-height) * (var(--product-ratio)) + var(--gallery-rail));
+  }
+
+  .product-layout .slider--with-thumbnails {
+    --gallery-rail: calc(var(--desktop-thumbnail) + var(--space-4));
     display: grid;
     grid-template-columns: var(--desktop-thumbnail) minmax(0, 1fr);
     gap: var(--space-4);
@@ -1741,6 +1760,11 @@ svg {
   .product-info h1,
   .product-sidebar {
     overflow-wrap: anywhere;
+  }
+
+  .product-sidebar {
+    position: sticky;
+    top: calc(var(--desktop-header) + var(--space-4));
   }
 
   .product-info h1 {
@@ -1946,9 +1970,7 @@ svg {
     line-height: var(--leading-body);
   }
 
-  .legal-page {
-    width: 100%;
-    max-width: calc(72ch + 2 * var(--gutter));
-    margin-inline: auto;
+  .legal-page > * {
+    max-width: 72ch;
   }
 }
