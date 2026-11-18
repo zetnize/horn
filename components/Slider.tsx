@@ -45,7 +45,7 @@ export function Slider({
           else router.replace("/#catalog");
         }}
       >
-        <Icon name="back" />
+        <Image src="/assets/less-than.svg" alt="" width={30} height={30} />
       </button>
       {images.length > 1 ? (
         <div className="slider-thumbnails desktop-only" role="group" aria-label="Выбор фотографии">
