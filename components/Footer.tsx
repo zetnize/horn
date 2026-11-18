@@ -2,10 +2,10 @@ import { readContent } from "@/lib/server/content";
 import { Icon } from "./Icons";
 import Link from "next/link";
 import { business } from "@/data/legal";
-export async function Footer() {
+export async function Footer({ desktopOnly = false }: { desktopOnly?: boolean }) {
   const { settings: links } = await readContent();
   return (
-    <footer className="footer container" id="contacts">
+    <footer className={`footer container${desktopOnly ? " desktop-only" : ""}`} id="contacts">
       <h2>Быстрая связь</h2>
       <div className="contact-links">
         {[

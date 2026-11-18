@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "./Icons";
@@ -9,6 +9,15 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const { items } = useCart();
   const count = items.reduce((total, item) => total + item.qty, 0);
+  useEffect(() => {
+    if (!open) return;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    function closeOnDesktop(event: MediaQueryListEvent) {
+      if (event.matches) setOpen(false);
+    }
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [open]);
   return (
     <>
       <header className="header container scroll-header">
@@ -22,6 +31,11 @@ export function Header() {
             loading="eager"
           />
         </Link>
+        <nav className="desktop-nav desktop-only" aria-label="Разделы магазина">
+          <Link href="/#catalog">Магазин</Link>
+          <Link href="/waitlist">Ожидание</Link>
+          <Link href="/#contacts">Контакты</Link>
+        </nav>
         <nav className="header-actions" aria-label="Основная навигация">
           <Link
             href="/cart"
@@ -37,7 +51,7 @@ export function Header() {
           </Link>
           <button
             type="button"
-            className="icon-button"
+            className="icon-button header-menu-toggle"
             aria-label="Открыть меню"
             aria-expanded={open}
             aria-haspopup="dialog"

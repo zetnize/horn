@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import {
@@ -13,6 +13,7 @@ import { Header } from "./Header";
 import { Success } from "./Success";
 import { useContent } from "./ContentProvider";
 import { useCart } from "./CartProvider";
+import { PreorderSummary } from "./PreorderSummary";
 import Link from "next/link";
 import { CONSENT_VERSION } from "@/data/legal";
 const preorderFields: FieldDefinition[] = [
@@ -64,9 +65,9 @@ const waitlistFields: FieldDefinition[] = [
   { ...preorderFields[1], required: false },
   preorderFields[5],
 ];
-export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
+export function RequestForm({ mode, footer }: { mode: "preorder" | "waitlist"; footer: ReactNode }) {
   const cart = useCart();
-  const { settings } = useContent();
+  const { settings, products } = useContent();
   const router = useRouter();
   const preorder = mode === "preorder";
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -145,87 +146,94 @@ export function RequestForm({ mode }: { mode: "preorder" | "waitlist" }) {
           <h1 className="sr-only">Форма предзаказа</h1>
           <p role="status">Проверяем корзину…</p>
         </main>
+        {footer}
       </>
     );
   return (
     <>
       <Header />
-      <main id="main" className="form-page container">
+      <main id="main" className={`form-page form-page--${mode} container`}>
         <h1 className="page-title">
           {preorder ? "ФОРМА ПРЕДЗАКАЗА" : "ЛИСТ ОЖИДАНИЯ"}
         </h1>
         <div className={`form-intro editable-copy${preorder ? " form-intro--preorder" : ""}`}>
           {preorder ? settings.preorderIntro : settings.waitlistIntro}
         </div>
-        <form ref={formRef} onSubmit={submit} noValidate aria-busy={pending}>
-          {(preorder ? preorderFields : waitlistFields).map((field) => (
-            <Field key={field.name} field={field} errors={errors[field.name]} />
-          ))}
-          <div hidden aria-hidden="true">
-            <label htmlFor="website">Сайт</label>
-            <input
-              id="website"
-              name="website"
-              autoComplete="off"
-              tabIndex={-1}
-            />
-          </div>
-          {message ? (
-            <p role="alert" className="form-error">
-              {message}
-            </p>
-          ) : null}
-          <div className="form-consent">
-            <label>
+        <form className="request-form" ref={formRef} onSubmit={submit} noValidate aria-busy={pending}>
+          <div className="request-fields">
+            {(preorder ? preorderFields : waitlistFields).map((field) => (
+              <Field key={field.name} field={field} errors={errors[field.name]} />
+            ))}
+            <div hidden aria-hidden="true">
+              <label htmlFor="website">Сайт</label>
               <input
-                type="checkbox"
-                name="consent"
-                required
-                aria-invalid={!!errors.consent}
-                aria-describedby={errors.consent ? "consent-error" : undefined}
+                id="website"
+                name="website"
+                autoComplete="off"
+                tabIndex={-1}
               />
-              <span>
-                Даю{" "}
+            </div>
+            {message ? (
+              <p role="alert" className="form-error">
+                {message}
+              </p>
+            ) : null}
+            <div className="form-consent">
+              <label>
+                <input
+                  type="checkbox"
+                  name="consent"
+                  required
+                  aria-invalid={!!errors.consent}
+                  aria-describedby={errors.consent ? "consent-error" : undefined}
+                />
+                <span>
+                  Даю{" "}
+                  <Link
+                    href="/legal/consent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    согласие на обработку персональных данных
+                  </Link>{" "}
+                  для рассмотрения заявки и связи по ней.
+                </span>
+              </label>
+              {errors.consent ? (
+                <p id="consent-error" className="form-error" role="alert">
+                  {errors.consent[0]}
+                </p>
+              ) : null}
+              <p>
                 <Link
-                  href="/legal/consent"
+                  href="/legal/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  согласие на обработку персональных данных
-                </Link>{" "}
-                для рассмотрения заявки и связи по ней.
-              </span>
-            </label>
-            {errors.consent ? (
-              <p id="consent-error" className="form-error" role="alert">
-                {errors.consent[0]}
+                  Политика обработки данных
+                </Link>
+                .{" "}
+                <Link
+                  href="/legal/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Условия заказа, доставки и возврата
+                </Link>
+                .
               </p>
-            ) : null}
-            <p>
-              <Link
-                href="/legal/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Политика обработки данных
-              </Link>
-              .{" "}
-              <Link
-                href="/legal/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Условия заказа, доставки и возврата
-              </Link>
-              .
-            </p>
-            {preorder && <p>Тестовый сайт. Используйте вымышленные данные.</p>}
+              {preorder && <p>Тестовый сайт. Используйте вымышленные данные.</p>}
+            </div>
           </div>
-          <Button type="submit" variant="primary" disabled={pending}>
-            {pending ? "Отправка…" : "ОТПРАВИТЬ"}
-          </Button>
+          <div className="request-action">
+            {preorder ? <PreorderSummary items={cart.items} products={products} /> : null}
+            <Button type="submit" variant="primary" disabled={pending}>
+              {pending ? "Отправка…" : "ОТПРАВИТЬ"}
+            </Button>
+          </div>
         </form>
       </main>
+      {footer}
     </>
   );
 }

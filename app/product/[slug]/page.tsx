@@ -45,19 +45,23 @@ export default async function ProductPage({
         <nav className="breadcrumb container" aria-label="Хлебные крошки">
           <Link href="/">главная</Link>
         </nav>
-        <Slider images={product.images} name={product.name} />
-        <ProductDetails product={product} />
-        <div className="product-accordions container">
-          <Accordion title="Инфо" defaultOpen>
-            <h3>ДЕТАЛИ</h3>
-            <p>{product.description}</p>
-          </Accordion>
-          <Accordion title="Доставка">
-            <p>{product.delivery}</p>
-          </Accordion>
-          <Accordion title="Состав и уход">
-            <p>{product.care}</p>
-          </Accordion>
+        <div className="product-layout">
+          <Slider images={product.images} name={product.name} />
+          <div className="product-sidebar">
+            <ProductDetails product={product} />
+            <div className="product-accordions container">
+              <Accordion title="Инфо" defaultOpen>
+                <h3>ДЕТАЛИ</h3>
+                <p>{product.description}</p>
+              </Accordion>
+              <Accordion title="Доставка">
+                <p>{product.delivery}</p>
+              </Accordion>
+              <Accordion title="Состав и уход">
+                <p>{product.care}</p>
+              </Accordion>
+            </div>
+          </div>
         </div>
       </main>
       <Footer />

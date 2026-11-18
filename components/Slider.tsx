@@ -11,23 +11,39 @@ export function Slider({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  function go(index: number) {
+  function go(index: number, jump = false) {
     const node = ref.current;
     if (node)
       node.scrollTo({
         left:
           Math.max(0, Math.min(images.length - 1, index)) * node.clientWidth,
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        behavior: jump || window.matchMedia("(prefers-reduced-motion: reduce)").matches
           ? "instant"
           : "smooth",
       });
   }
   return (
     <section
-      className="slider"
+      className={`slider${images.length > 1 ? " slider--with-thumbnails" : ""}`}
       aria-label={`Фотографии: ${name}`}
       aria-roledescription="карусель"
     >
+      {images.length > 1 ? (
+        <div className="slider-thumbnails desktop-only" role="group" aria-label="Выбор фотографии">
+          {images.map((src, index) => (
+            <button
+              key={index}
+              type="button"
+              className="slider-thumbnail"
+              aria-label={`Показать фото ${index + 1} из ${images.length}`}
+              aria-current={index === active ? "true" : undefined}
+              onClick={() => go(index, true)}
+            >
+              <Image src={src} alt="" width={500} height={700} sizes="64px" />
+            </button>
+          ))}
+        </div>
+      ) : null}
       <div className="slider-segments" aria-hidden="true">
         {images.map((_, index) => (
           <span key={index} className={index === active ? "active" : ""} />
@@ -65,7 +81,7 @@ export function Slider({
               alt={`${name}, фото ${index + 1} — изображение ожидается`}
               width={500}
               height={700}
-              sizes="(max-width: 767px) 100vw, 430px"
+              sizes="(min-width: 1280px) 680px, (min-width: 1024px) 54vw, (max-width: 767px) 100vw, 430px"
               priority={index === 0}
             />
           </div>

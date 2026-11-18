@@ -32,13 +32,13 @@ export function CartContents() {
   );
   const quantity = items.reduce((sum, item) => sum + item.qty, 0);
   return (
-    <>
+    <div className="cart-layout">
       <ul className="cart-list">
         {items.map((item) => {
           const product = getProduct(item.slug);
           if (!product || !product.sizes.includes(item.size))
             return (
-              <li className="cart-item" key={`${item.slug}-${item.size}`}>
+              <li className="cart-item cart-item--unavailable" key={`${item.slug}-${item.size}`}>
                 <p>Товар или размер больше недоступен</p>
                 <button
                   className="button"
@@ -60,7 +60,7 @@ export function CartContents() {
                   alt=""
                   width={500}
                   height={700}
-                  sizes="110px"
+                  sizes="(min-width: 1024px) 112px, 110px"
                 />
               </Link>
               <div className="cart-item-copy">
@@ -138,6 +138,6 @@ export function CartContents() {
           </Link>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EditorialImage } from "@/components/EditorialImage";
 import { ProductGrid } from "@/components/ProductGrid";
+import { Icon } from "@/components/Icons";
 import { readContent } from "@/lib/server/content";
 export default async function Home() {
   const { settings } = await readContent();
@@ -11,17 +12,21 @@ export default async function Home() {
       <Header />
       <main id="main">
         <h1 className="sr-only">NORTHIA — born in the mountains</h1>
-        <EditorialImage
-          caption={settings.heroCaption}
-          src={settings.heroImage}
-          alt={settings.heroAlt}
-          hero
-        />
-        <p className="brand-copy">{settings.brandCopy}</p>
-        <section id="catalog" aria-labelledby="catalog-title">
-          <h2 id="catalog-title" className="catalog-title">
-            {settings.catalogTitle}
-          </h2>
+        <div className="home-lead">
+          <EditorialImage src={settings.heroImage} alt={settings.heroAlt} hero />
+          <div className="home-lead-copy">
+            <p className="hero-caption">{settings.heroCaption}</p>
+            <p className="brand-copy">{settings.brandCopy}</p>
+            <h2 id="catalog-title" className="catalog-title">
+              {settings.catalogTitle}
+            </h2>
+            <Link href="#catalog" className="button collection-link desktop-only">
+              Посмотреть коллекцию <Icon name="right" />
+            </Link>
+            <div id="catalog" />
+          </div>
+        </div>
+        <section className="catalog" aria-labelledby="catalog-title">
           <ProductGrid />
         </section>
         <section className="drop" aria-label="Новая коллекция">
