@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Icon } from "./Icons";
 export function Slider({
@@ -10,6 +11,7 @@ export function Slider({
   name: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const [active, setActive] = useState(0);
   function go(index: number, jump = false) {
     const node = ref.current;
@@ -28,6 +30,23 @@ export function Slider({
       aria-label={`Фотографии: ${name}`}
       aria-roledescription="карусель"
     >
+      <button
+        type="button"
+        className="icon-button slider-back"
+        aria-label="Назад"
+        onClick={() => {
+          const navigation = (window as Window & {
+            navigation?: { canGoBack: boolean };
+          }).navigation;
+          const canGoBack = navigation?.canGoBack ??
+            (window.history.length > 1 &&
+              (window.history.length > 2 || Boolean(document.referrer)));
+          if (canGoBack) router.back();
+          else router.replace("/#catalog");
+        }}
+      >
+        <Icon name="back" />
+      </button>
       {images.length > 1 ? (
         <div className="slider-thumbnails desktop-only" role="group" aria-label="Выбор фотографии">
           {images.map((src, index) => (
@@ -81,7 +100,7 @@ export function Slider({
               alt={`${name}, фото ${index + 1} — изображение ожидается`}
               width={500}
               height={700}
-              sizes="(min-width: 1024px) min(55vw, 1020px, (100dvh - 148px) * 5 / 7), (max-width: 767px) 100vw, 430px"
+              sizes="(min-width: 1024px) min(55vw, 1020px, (100dvh - 112px) * 5 / 7), (max-width: 767px) 100vw, 430px"
               priority={index === 0}
             />
           </div>

@@ -111,7 +111,6 @@
   --type-success-copy-line: 0.6875rem;
   --type-success-order-copy-size: 0.875rem;
   --type-success-order-copy-line: 1.25rem;
-  --type-breadcrumb-line: 0.5625rem;
 }
 @theme inline {
   --color-paper: var(--paper);
@@ -835,17 +834,14 @@ svg {
   width: var(--icon);
   height: var(--icon);
 }
-.breadcrumb {
-  padding-top: var(--space-1);
-  padding-bottom: var(--space-2);
-  color: var(--muted);
-  font-family: var(--font-actay);
-  font-weight: var(--weight-normal);
-  font-size: var(--type-ui-size);
-  line-height: var(--type-breadcrumb-line);
-}
 .slider {
   position: relative;
+}
+.slider .slider-back {
+  position: absolute;
+  inset: var(--space-6) auto auto var(--gutter);
+  z-index: 2;
+  background: var(--paper);
 }
 .slider-track {
   display: flex;
@@ -1449,7 +1445,6 @@ svg {
     --desktop-gutter: max(clamp(var(--space-6), 4vw, var(--space-20)), (100% - var(--desktop-content)) / 2);
     --desktop-gap: clamp(var(--space-6), 4vw, var(--space-16));
     --desktop-header: 4.5rem;
-    --desktop-breadcrumb: 3.75rem;
     --desktop-form-width: 36rem;
     --desktop-summary-width: 24rem;
     --desktop-cart-photo: 7rem;
@@ -1673,25 +1668,22 @@ svg {
     overflow-wrap: anywhere;
   }
 
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    min-height: var(--desktop-breadcrumb);
-    font-size: var(--text-base);
-  }
-
   .product-layout {
-    --gallery-height: max(var(--control), 100dvh - var(--desktop-header) - var(--desktop-breadcrumb) - var(--space-4));
+    --gallery-height: max(var(--control), 100dvh - var(--desktop-header) - var(--space-6) - var(--space-4));
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: var(--desktop-gap);
-    padding: 0 var(--gutter) var(--space-16);
+    padding: var(--space-6) var(--gutter) var(--space-16);
     align-items: start;
   }
 
   .product-layout .slider {
     --gallery-rail: 0rem;
     width: min(100%, var(--gallery-height) * (var(--product-ratio)) + var(--gallery-rail));
+  }
+
+  .slider .slider-back {
+    inset: var(--space-4) auto auto calc(var(--gallery-rail) + var(--space-4));
   }
 
   .product-layout .slider--with-thumbnails {

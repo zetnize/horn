@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { readContent } from "@/lib/server/content";
 async function getProduct(slug: string) {
@@ -42,9 +41,6 @@ export default async function ProductPage({
     <>
       <Header />
       <main id="main">
-        <nav className="breadcrumb container" aria-label="Хлебные крошки">
-          <Link href="/">главная</Link>
-        </nav>
         <div className="product-layout">
           <Slider images={product.images} name={product.name} />
           <div className="product-sidebar">
