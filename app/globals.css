@@ -56,7 +56,7 @@
   --product-ratio: 5 / 7;
   --card-copy: 6.625rem;
   --motion: 200ms;
-  --card-reveal-distance: 0.5rem;
+  --slider-back-icon: 1.5rem;
   --scroll-duration: 220ms;
   --menu-gap: 2.375rem;
   --menu-height: 42.8125rem;
@@ -844,6 +844,11 @@ svg {
   inset: var(--space-6) auto auto var(--gutter);
   z-index: 2;
 }
+.slider-back img {
+  width: var(--slider-back-icon);
+  height: var(--slider-back-icon);
+  filter: brightness(0) invert(1);
+}
 .slider-track {
   display: flex;
   overflow-x: auto;
@@ -1242,20 +1247,6 @@ svg {
 }
 .product-card:nth-child(odd) {
   border-right: var(--stroke) solid var(--line);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .product-card.is-revealed {
-    animation: product-card-reveal var(--motion) ease-out;
-  }
-  .product-card.is-revealed:focus-within {
-    animation-duration: 0s;
-  }
-}
-@keyframes product-card-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(var(--card-reveal-distance));
-  }
 }
 .product-card:last-child,
 .product-card:nth-last-child(2):nth-child(odd) {
