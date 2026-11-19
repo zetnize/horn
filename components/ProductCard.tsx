@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
         alt={`${product.name}, ${product.color} — фото ожидается`}
         width={500}
         height={700}
-        sizes="(min-width: 1024px) min(25vw, 457px), (max-width: 767px) 40vw, 172px"
+        sizes="(min-width: 1024px) min(25vw, 457px), (max-width: 767px) 50vw, 215px"
       />
       <div className="card-copy">
         <h3>{product.name}</h3>

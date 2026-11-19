@@ -1231,9 +1231,7 @@ svg {
 }
 .product-grid {
   display: grid;
-  --catalog-card-scale: 0.8;
-  grid-template-columns: repeat(2, minmax(0, calc(50% * var(--catalog-card-scale))));
-  justify-content: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .product-card {
   min-width: 0;
@@ -1620,7 +1618,9 @@ svg {
   }
 
   .product-grid {
+    --catalog-card-scale: 0.8;
     grid-template-columns: repeat(3, minmax(0, calc((100% - 2 * var(--space-6)) * var(--catalog-card-scale) / 3)));
+    justify-content: center;
     gap: var(--space-8) var(--space-6);
     padding: var(--space-12) var(--gutter);
   }
