@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
 import {
   DEFAULT_SHIPPING,
+  MAX_SHIPPING_TEXT_LENGTH,
   PRODUCT_SIZES,
   PRODUCT_TYPE_LABELS,
   formatPrice,
+  formatShipping,
 } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
 import { SuccessCarousel } from "@/components/SuccessCarousel";
@@ -472,17 +474,16 @@ export function AdminPanel({ initial }: { initial: Content }) {
                   onChange={(color) => product({ color })}
                 />
                 <label>
-                  Срок отправки
+                  Текст о сроке отправки
                   <input
-                    value={current.shipping}
-                    onChange={(e) => product({ shipping: e.target.value })}
-                    placeholder={DEFAULT_SHIPPING}
-                    maxLength={200}
+                    value={formatShipping(current)}
+                    onChange={(e) => product({ shippingText: e.target.value })}
+                    maxLength={MAX_SHIPPING_TEXT_LENGTH}
                     required
                     aria-describedby="admin-shipping-hint"
                   />
                   <span id="admin-shipping-hint" className="admin-hint">
-                    Показывается в каталоге и на странице товара.
+                    Вся строка целиком. Например, «Отправим в течение 5 дней».
                   </span>
                 </label>
                 <label>

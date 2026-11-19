@@ -16,6 +16,7 @@ export type Product = {
   sizes: readonly Size[];
   color: string;
   shipping: string;
+  shippingText?: string;
   type: ProductType;
   images: readonly string[];
   description: string;
@@ -23,6 +24,11 @@ export type Product = {
 const missingDescription = "Описание товара пока не предоставлено.";
 const placeholder = "/assets/product-placeholder.svg";
 export const DEFAULT_SHIPPING = "10-15 дней";
+export const MAX_SHIPPING_TEXT_LENGTH = 240;
+
+export function formatShipping(product: Pick<Product, "shipping" | "shippingText">) {
+  return product.shippingText ?? `Срок отправки: ${product.shipping}`;
+}
 export const products: readonly Product[] = [
   {
     slug: "tee-iron-milk",

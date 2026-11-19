@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { PRODUCT_SIZES, PRODUCT_TYPE_LABELS } from "@/data/products";
+import {
+  MAX_SHIPPING_TEXT_LENGTH,
+  PRODUCT_SIZES,
+  PRODUCT_TYPE_LABELS,
+} from "@/data/products";
 const text = z.string().trim().min(1).max(10000);
 export const imagePath = z
   .string()
@@ -24,6 +28,7 @@ export const productSchema = z.object({
     .refine((v) => new Set(v).size === v.length),
   color: text.max(100),
   shipping: text.max(200),
+  shippingText: text.max(MAX_SHIPPING_TEXT_LENGTH).optional(),
   type: z.enum(
     Object.keys(PRODUCT_TYPE_LABELS) as (keyof typeof PRODUCT_TYPE_LABELS)[],
   ),

@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { formatPrice, type Product, type Size } from "@/data/products";
+import { formatPrice, formatShipping, type Product, type Size } from "@/data/products";
 import { useCart } from "./CartProvider";
 import { Button } from "./Button";
 import { Icon } from "./Icons";
@@ -38,7 +38,7 @@ export function ProductDetails({ product }: { product: Product }) {
         <p className="product-price price">{formatPrice(product.price)}</p>
         <div className="product-meta">
           <p>Цвет: {product.color}</p>
-          <p>Срок отправки: {product.shipping}</p>
+          <p>{formatShipping(product)}</p>
         </div>
         <div ref={sizesRef}>
           <SizeChips

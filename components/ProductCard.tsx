@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice, type Product } from "@/data/products";
+import { formatPrice, formatShipping, type Product } from "@/data/products";
 export function ProductCard({ product }: { product: Product }) {
   return (
     <Link className="product-card" href={`/product/${product.slug}`}>
@@ -22,7 +22,7 @@ export function ProductCard({ product }: { product: Product }) {
             <span key={size}>{size}</span>
           ))}
         </p>
-        <p className="card-shipping">Срок отправки: {product.shipping}</p>
+        <p className="card-shipping">{formatShipping(product)}</p>
       </div>
     </Link>
   );
