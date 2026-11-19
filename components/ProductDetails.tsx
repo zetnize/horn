@@ -12,6 +12,8 @@ export function ProductDetails({ product }: { product: Product }) {
   const [guide, setGuide] = useState(false);
   const sizesRef = useRef<HTMLDivElement>(null);
   const cart = useCart();
+  const { type } = product;
+  const hasSizeGuide = type === "tee" || type === "longsleeve" || type === "hoodie";
   const added = cart.items.some(
     (item) => item.slug === product.slug && (size === null || item.size === size),
   );
@@ -49,20 +51,22 @@ export function ProductDetails({ product }: { product: Product }) {
             }}
           />
         </div>
-        <button
-          className="text-button size-guide-link"
-          onClick={() => setGuide(true)}
-        >
-          Размерная сетка
-        </button>
+        {hasSizeGuide && (
+          <button
+            className="text-button size-guide-link"
+            onClick={() => setGuide(true)}
+          >
+            Размерная сетка
+          </button>
+        )}
         <Button className={`add-to-cart${added ? " is-added" : ""}`} onClick={add}>
           <Icon name="cart" />
           <span aria-live="polite">{added ? "Добавлено" : "В КОРЗИНУ"}</span>
           <span className="price">{formatPrice(product.price)}</span>
         </Button>
       </div>
-      {guide ? (
-        <SizeGuideModal type={product.type} onClose={() => setGuide(false)} />
+      {guide && hasSizeGuide ? (
+        <SizeGuideModal type={type} onClose={() => setGuide(false)} />
       ) : null}
     </>
   );

@@ -1,4 +1,4 @@
-import { type Size } from "@/data/products";
+import { PRODUCT_SIZES, type Size } from "@/data/products";
 export type CartItem = { slug: string; size: Size; qty: number };
 export const CART_KEY = "northia.cart.v1";
 export const MAX_QTY = 99;
@@ -22,7 +22,7 @@ export function parseCart(value: unknown): CartItem[] {
       continue;
     if (
       !/^[a-z0-9-]{1,100}$/.test(slug) ||
-      !["XS", "S", "M", "L", "XL"].includes(size)
+      !PRODUCT_SIZES.some((available) => available === size)
     )
       continue;
     const existing = result.find(

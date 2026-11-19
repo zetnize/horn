@@ -1,5 +1,14 @@
-export type Size = "XS" | "S" | "M" | "L" | "XL";
-export type ProductType = "tee" | "longsleeve" | "hoodie";
+export const PRODUCT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+export const PRODUCT_TYPE_LABELS = {
+  tee: "Футболка",
+  longsleeve: "Лонгслив",
+  hoodie: "Худи",
+  trousers: "Брюки",
+  shirt: "Рубашка",
+  cap: "Бейсболка",
+} as const;
+export type Size = (typeof PRODUCT_SIZES)[number];
+export type ProductType = keyof typeof PRODUCT_TYPE_LABELS;
 export type Product = {
   slug: string;
   name: string;

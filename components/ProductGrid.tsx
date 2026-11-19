@@ -1,14 +1,15 @@
 import { readContent } from "@/lib/server/content";
 import { ProductCard } from "./ProductCard";
+import { ProductGridReveal } from "./ProductGridReveal";
 export async function ProductGrid() {
   const { products } = await readContent();
   return (
-    <div className="product-grid">
+    <ProductGridReveal>
       {products
         .filter((p) => !p.hidden)
         .map((product) => (
           <ProductCard product={product} key={product.slug} />
         ))}
-    </div>
+    </ProductGridReveal>
   );
 }

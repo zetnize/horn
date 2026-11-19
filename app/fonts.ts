@@ -10,8 +10,8 @@ export const montserrat = localFont({
 });
 
 export const unbounded = localFont({
-  src: "./fonts/Unbounded-Medium.ttf",
-  weight: "500",
+  src: "./fonts/Unbounded-400-500.woff2",
+  weight: "400 500",
   style: "normal",
   variable: "--font-unbounded",
   display: "swap",

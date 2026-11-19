@@ -4,6 +4,8 @@ import {
   uploadedImagePath,
   MAX_IMAGE_BYTES,
   IMAGE_SIZE_MESSAGE,
+  MAX_JPEG_INPUT_BYTES,
+  prepareImageUpload,
 } from "../lib/admin-upload.ts";
 
 test("plain text/HTML hosting failures yield readable upload errors", async () => {
@@ -29,9 +31,11 @@ test("plain text/HTML hosting failures yield readable upload errors", async () =
     /не подтвердил/,
   );
 });
-test("only confirmed PNG paths update image selection", async () => {
-  const path = "/media/12345678-abcd-4321-abcd-123456789abc.png";
-  assert.equal(await uploadedImagePath(Response.json({ path })), path);
+test("only confirmed PNG and JPG paths update image selection", async () => {
+  for (const extension of ["png", "jpg"]) {
+    const path = `/media/12345678-abcd-4321-abcd-123456789abc.${extension}`;
+    assert.equal(await uploadedImagePath(Response.json({ path })), path);
+  }
   for (const data of [
     null,
     {},
@@ -47,5 +51,25 @@ test("only confirmed PNG paths update image selection", async () => {
       Response.json({ message: "Выберите PNG" }, { status: 400 }),
     ),
     /Выберите PNG/,
+  );
+});
+
+test("upload preparation accepts JPEG bytes, rejects unsupported files and keeps separate size limits", async () => {
+  const jpeg = new Uint8Array([255, 216, 255, 224]);
+  const file = new File([jpeg], "photo.jpeg");
+  const upload = await prepareImageUpload(file);
+  assert.equal(upload.type, "image/jpeg");
+  assert.deepEqual(new Uint8Array(await upload.arrayBuffer()), jpeg);
+  await assert.rejects(prepareImageUpload(new File(["<svg/>"], "photo.jpg")), /формате JPG или PNG/);
+  await assert.rejects(
+    prepareImageUpload(new File([jpeg, new Uint8Array(MAX_JPEG_INPUT_BYTES)], "large.jpg")),
+    /не больше 10 МБ/,
+  );
+  await assert.rejects(
+    prepareImageUpload(new File([
+      new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]),
+      new Uint8Array(MAX_IMAGE_BYTES),
+    ], "large.png")),
+    /не больше 4 МБ/,
   );
 });

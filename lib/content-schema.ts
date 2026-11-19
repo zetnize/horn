@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRODUCT_SIZES, PRODUCT_TYPE_LABELS } from "@/data/products";
 const text = z.string().trim().min(1).max(10000);
 export const imagePath = z
   .string()
@@ -17,13 +18,15 @@ export const productSchema = z.object({
   name: text.max(200),
   price: z.number().int().min(1).max(10000000),
   sizes: z
-    .array(z.enum(["XS", "S", "M", "L", "XL"]))
+    .array(z.enum(PRODUCT_SIZES))
     .min(1)
-    .max(5)
+    .max(PRODUCT_SIZES.length)
     .refine((v) => new Set(v).size === v.length),
   color: text.max(100),
   shipping: text.max(200),
-  type: z.enum(["tee", "longsleeve", "hoodie"]),
+  type: z.enum(
+    Object.keys(PRODUCT_TYPE_LABELS) as (keyof typeof PRODUCT_TYPE_LABELS)[],
+  ),
   images: z.array(imagePath).min(1).max(12),
   description: text,
   delivery: text,

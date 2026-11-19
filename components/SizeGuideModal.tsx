@@ -2,12 +2,13 @@
 import Image from "next/image";
 import { Dialog } from "./Dialog";
 import { Icon } from "./Icons";
-import type { ProductType } from "@/data/products";
+import { PRODUCT_TYPE_LABELS } from "@/data/products";
+export type SizeGuideType = "tee" | "longsleeve" | "hoodie";
 export function SizeGuideModal({
   type,
   onClose,
 }: {
-  type: ProductType;
+  type: SizeGuideType;
   onClose: () => void;
 }) {
   return (
@@ -28,7 +29,7 @@ export function SizeGuideModal({
         width={216}
         height={354}
         sizes="(max-width: 767px) 90vw, 390px"
-        alt={`Размерная сетка: ${type === "tee" ? "футболка" : type === "hoodie" ? "худи" : "лонгслив"}; размеры изделия в сантиметрах`}
+        alt={`Размерная сетка: ${PRODUCT_TYPE_LABELS[type].toLowerCase()}; размеры изделия в сантиметрах`}
       />
     </Dialog>
   );

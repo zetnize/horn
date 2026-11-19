@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Content, ManagedProduct, Settings } from "@/lib/content-schema";
-import { DEFAULT_SHIPPING, formatPrice } from "@/data/products";
+import {
+  DEFAULT_SHIPPING,
+  PRODUCT_SIZES,
+  PRODUCT_TYPE_LABELS,
+  formatPrice,
+} from "@/data/products";
 import { Dialog } from "@/components/Dialog";
 import { SuccessCarousel } from "@/components/SuccessCarousel";
 import { carouselProducts } from "@/lib/carousel-products";
 import {
-  MAX_IMAGE_BYTES,
-  IMAGE_SIZE_MESSAGE,
+  prepareImageUpload,
   uploadedImagePath,
 } from "@/lib/admin-upload";
 
@@ -85,24 +89,21 @@ function Upload({
         {label}
         <input
           type="file"
-          accept="image/png,.png"
+          accept="image/png,image/jpeg,.png,.jpg,.jpeg"
           disabled={busy}
           onChange={async (e) => {
             const file = e.target.files?.[0];
             e.target.value = "";
             if (!file) return;
-            if (file.size > MAX_IMAGE_BYTES) {
-              setError(IMAGE_SIZE_MESSAGE);
-              return;
-            }
             setBusy(true);
             onBusy(true);
             setError("");
             try {
+              const image = await prepareImageUpload(file);
               const response = await fetch("/api/admin/upload", {
                 method: "POST",
-                headers: { "Content-Type": file.type },
-                body: file,
+                headers: { "Content-Type": image.type },
+                body: image,
               });
               onChange(await uploadedImagePath(response));
             } catch (err) {
@@ -117,7 +118,9 @@ function Upload({
       {onClear && value && (
         <button type="button" onClick={onClear}>Использовать мобильное фото</button>
       )}
-      <p className="admin-hint">PNG, до 4 МБ. Прозрачный фон сохраняется.</p>
+      <p className="admin-hint">
+        PNG до 4 МБ, JPG до 10 МБ. JPG больше 4 МБ сжимается перед отправкой.
+      </p>
       {busy && <p role="status">Загрузка…</p>}
       {error && (
         <p role="alert" className="form-error">
@@ -468,11 +471,20 @@ export function AdminPanel({ initial }: { initial: Content }) {
                   value={current.color}
                   onChange={(color) => product({ color })}
                 />
-                <TextField
-                  label="Срок отправки"
-                  value={current.shipping}
-                  onChange={(shipping) => product({ shipping })}
-                />
+                <label>
+                  Срок отправки
+                  <input
+                    value={current.shipping}
+                    onChange={(e) => product({ shipping: e.target.value })}
+                    placeholder={DEFAULT_SHIPPING}
+                    maxLength={200}
+                    required
+                    aria-describedby="admin-shipping-hint"
+                  />
+                  <span id="admin-shipping-hint" className="admin-hint">
+                    Показывается в каталоге и на странице товара.
+                  </span>
+                </label>
                 <label>
                   Тип товара
                   <select
@@ -483,15 +495,15 @@ export function AdminPanel({ initial }: { initial: Content }) {
                       })
                     }
                   >
-                    <option value="tee">Футболка</option>
-                    <option value="longsleeve">Лонгслив</option>
-                    <option value="hoodie">Худи</option>
+                    {Object.entries(PRODUCT_TYPE_LABELS).map(([type, label]) => (
+                      <option key={type} value={type}>{label}</option>
+                    ))}
                   </select>
                 </label>
                 <fieldset>
                   <legend>Доступные размеры</legend>
                   <div className="admin-sizes">
-                    {(["XS", "S", "M", "L", "XL"] as const).map((size) => (
+                    {PRODUCT_SIZES.map((size) => (
                       <label key={size}>
                         <input
                           type="checkbox"

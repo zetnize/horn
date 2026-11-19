@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CONSENT_VERSION } from "@/data/legal";
+import { PRODUCT_SIZES } from "@/data/products";
 const consentFields = {
   consent: z.literal(true, {
     error: "Необходимо согласие на обработку данных",
@@ -16,7 +17,7 @@ const requiredText = (max: number) =>
     .max(max, `Не более ${max} символов`);
 export const itemSchema = z.object({
   slug: requiredText(100),
-  size: z.enum(["XS", "S", "M", "L", "XL"], {
+  size: z.enum(PRODUCT_SIZES, {
     error: "Выберите доступный размер",
   }),
   qty: z
