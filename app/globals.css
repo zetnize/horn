@@ -1248,6 +1248,36 @@ svg {
 .card-gallery {
   position: relative;
 }
+.product-card a:is(:hover, :active) {
+  opacity: 1;
+}
+.card-arrow {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-gallery:hover .card-arrow:enabled {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--control);
+    height: var(--control);
+    color: var(--paper);
+    opacity: 1;
+  }
+  .card-arrow-left { left: var(--space-1); }
+  .card-arrow-right { right: var(--space-1); }
+  .card-arrow .icon {
+    width: var(--space-8);
+    height: var(--space-8);
+    padding: var(--space-2);
+    border-radius: 50%;
+    background: rgb(27 30 27 / 78%);
+    transition: background-color var(--motion);
+  }
+  .card-arrow:hover .icon { background: var(--ink); }
+}
 .card-track {
   border-radius: var(--radius-photo);
   scroll-behavior: smooth;

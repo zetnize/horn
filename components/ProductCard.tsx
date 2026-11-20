@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { formatPrice, formatShipping, type Product } from "@/data/products";
+import { Icon } from "./Icons";
 
 const placeholder = "/assets/product-placeholder.svg";
 
@@ -52,9 +53,26 @@ export function ProductCard({ product }: { product: Product }) {
           ))}
         </Link>
         {images.length > 1 && (
-          <div className="card-indicator" aria-hidden="true">
-            {images.map((_, index) => <span key={index} className={active === index ? "active" : undefined} />)}
-          </div>
+          <>
+            <div className="card-indicator" aria-hidden="true">
+              {images.map((_, index) => <span key={index} className={active === index ? "active" : undefined} />)}
+            </div>
+            {(["left", "right"] as const).map((direction) => {
+              const previous = direction === "left";
+              return (
+                <button
+                  key={direction}
+                  type="button"
+                  className={`card-arrow card-arrow-${direction}`}
+                  aria-label={previous ? "Предыдущее фото" : "Следующее фото"}
+                  disabled={previous ? active === 0 : active === images.length - 1}
+                  onClick={() => showPhoto(active + (previous ? -1 : 1))}
+                >
+                  <Icon name={direction} />
+                </button>
+              );
+            })}
+          </>
         )}
       </div>
       <div className="card-copy">
