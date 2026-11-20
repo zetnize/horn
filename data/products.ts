@@ -19,8 +19,18 @@ export type Product = {
   shippingText?: string;
   type: ProductType;
   images: readonly string[];
+  sizeGuideImage?: string;
   description: string;
 };
+const defaultSizeGuides: Partial<Record<ProductType, string>> = {
+  tee: "/assets/size-tee.png",
+  longsleeve: "/assets/size-longsleeve.png",
+  hoodie: "/assets/size-hoodie.png",
+};
+
+export function getSizeGuideImage(product: Pick<Product, "type" | "sizeGuideImage">) {
+  return product.sizeGuideImage ?? defaultSizeGuides[product.type];
+}
 const missingDescription = "Описание товара пока не предоставлено.";
 const placeholder = "/assets/product-placeholder.svg";
 export const DEFAULT_SHIPPING = "10-15 дней";

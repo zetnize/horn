@@ -2,13 +2,13 @@
 import Image from "next/image";
 import { Dialog } from "./Dialog";
 import { Icon } from "./Icons";
-import { PRODUCT_TYPE_LABELS } from "@/data/products";
-export type SizeGuideType = "tee" | "longsleeve" | "hoodie";
 export function SizeGuideModal({
-  type,
+  src,
+  name,
   onClose,
 }: {
-  type: SizeGuideType;
+  src: string;
+  name: string;
   onClose: () => void;
 }) {
   return (
@@ -25,11 +25,11 @@ export function SizeGuideModal({
       </div>
       <Image
         className="size-guide-image"
-        src={`/assets/size-${type}.png`}
+        src={src}
         width={216}
         height={354}
         sizes="(max-width: 767px) 90vw, 390px"
-        alt={`Размерная сетка: ${PRODUCT_TYPE_LABELS[type].toLowerCase()}; размеры изделия в сантиметрах`}
+        alt={`Размерная сетка: ${name}`}
       />
     </Dialog>
   );

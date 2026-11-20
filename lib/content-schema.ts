@@ -33,6 +33,7 @@ export const productSchema = z.object({
     Object.keys(PRODUCT_TYPE_LABELS) as (keyof typeof PRODUCT_TYPE_LABELS)[],
   ),
   images: z.array(imagePath).min(1).max(12),
+  sizeGuideImage: imagePath.optional(),
   description: text,
   delivery: text,
   care: text,

@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { formatPrice, formatShipping, type Product, type Size } from "@/data/products";
+import { formatPrice, formatShipping, getSizeGuideImage, type Product, type Size } from "@/data/products";
 import { useCart } from "./CartProvider";
 import { Button } from "./Button";
 import { Icon } from "./Icons";
@@ -12,8 +12,7 @@ export function ProductDetails({ product }: { product: Product }) {
   const [guide, setGuide] = useState(false);
   const sizesRef = useRef<HTMLDivElement>(null);
   const cart = useCart();
-  const { type } = product;
-  const hasSizeGuide = type === "tee" || type === "longsleeve" || type === "hoodie";
+  const sizeGuideImage = getSizeGuideImage(product);
   const added = cart.items.some(
     (item) => item.slug === product.slug && (size === null || item.size === size),
   );
@@ -51,7 +50,7 @@ export function ProductDetails({ product }: { product: Product }) {
             }}
           />
         </div>
-        {hasSizeGuide && (
+        {sizeGuideImage && (
           <button
             className="text-button size-guide-link"
             onClick={() => setGuide(true)}
@@ -65,8 +64,8 @@ export function ProductDetails({ product }: { product: Product }) {
           <span className="price">{formatPrice(product.price)}</span>
         </Button>
       </div>
-      {guide && hasSizeGuide ? (
-        <SizeGuideModal type={type} onClose={() => setGuide(false)} />
+      {guide && sizeGuideImage ? (
+        <SizeGuideModal src={sizeGuideImage} name={product.name} onClose={() => setGuide(false)} />
       ) : null}
     </>
   );

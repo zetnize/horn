@@ -11,6 +11,7 @@ import {
   PRODUCT_TYPE_LABELS,
   formatPrice,
   formatShipping,
+  getSizeGuideImage,
 } from "@/data/products";
 import { Dialog } from "@/components/Dialog";
 import { SuccessCarousel } from "@/components/SuccessCarousel";
@@ -522,6 +523,26 @@ export function AdminPanel({ initial }: { initial: Content }) {
                     ))}
                   </div>
                 </fieldset>
+                <h3>Размерная сетка</h3>
+                <p className="admin-hint">
+                  Загрузите таблицу для этого товара. Она откроется по ссылке
+                  «Размерная сетка» на странице товара после сохранения.
+                </p>
+                <Upload
+                  key={selected}
+                  label="Загрузить размерную сетку"
+                  value={getSizeGuideImage(current) ?? ""}
+                  onChange={(sizeGuideImage) => product({ sizeGuideImage })}
+                  onBusy={onBusy}
+                />
+                {current.sizeGuideImage && (
+                  <button
+                    type="button"
+                    onClick={() => product({ sizeGuideImage: undefined })}
+                  >
+                    Удалить загруженную сетку
+                  </button>
+                )}
                 <label className="admin-check">
                   <input
                     type="checkbox"
