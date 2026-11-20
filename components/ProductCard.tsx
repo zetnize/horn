@@ -6,10 +6,12 @@ import { useRef, useState } from "react";
 import { formatPrice, formatShipping, type Product } from "@/data/products";
 import { Icon } from "./Icons";
 
+const placeholder = "/assets/product-placeholder.svg";
+
 export function ProductCard({ product }: { product: Product }) {
   const track = useRef<HTMLAnchorElement>(null);
   const [active, setActive] = useState(0);
-  const images = product.images.length ? [...new Set(product.images)] : ["/assets/product-placeholder.svg"];
+  const images = product.images.length ? product.images : [placeholder];
   const href = `/product/${product.slug}`;
 
   function showPhoto(index: number) {
@@ -38,22 +40,25 @@ export function ProductCard({ product }: { product: Product }) {
           }}
         >
           {images.map((src, index) => (
-            <Image
-              className="slide"
-              key={src}
-              src={src}
-              alt={`${product.name}, ${product.color}, фото ${index + 1}`}
-              width={500}
-              height={700}
-              sizes="(min-width: 1024px) min(26vw, 457px), (max-width: 767px) 50vw, 215px"
-              draggable={false}
-            />
+            <div className="slide card-frame" key={index}>
+              <Image
+                src={src}
+                alt={`${product.name}, ${product.color}, фото ${index + 1}`}
+                width={500}
+                height={700}
+                sizes="(min-width: 1024px) min(26vw, 457px), (max-width: 767px) 50vw, 215px"
+                draggable={false}
+              />
+              {src === placeholder && images.length > 1 && (
+                <span className="card-frame-number" aria-hidden="true">{index + 1} / {images.length}</span>
+              )}
+            </div>
           ))}
         </Link>
         {images.length > 1 && (
           <>
             <div className="card-indicator" aria-hidden="true">
-              {images.map((src, index) => <span key={src} className={active === index ? "active" : undefined} />)}
+              {images.map((_, index) => <span key={index} className={active === index ? "active" : undefined} />)}
             </div>
             {(["left", "right"] as const).map((direction) => (
               <button

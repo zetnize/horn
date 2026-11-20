@@ -1252,6 +1252,19 @@ svg {
   border-radius: var(--radius-photo);
   scroll-behavior: smooth;
 }
+.card-frame {
+  position: relative;
+  min-width: 0;
+}
+.card-frame-number {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  pointer-events: none;
+}
 .card-track img {
   min-width: 0;
   width: 100%;
