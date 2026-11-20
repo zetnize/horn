@@ -1253,17 +1253,7 @@ svg {
   scroll-behavior: smooth;
 }
 .card-frame {
-  position: relative;
   min-width: 0;
-}
-.card-frame-number {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--ink);
-  font-size: var(--text-sm);
-  pointer-events: none;
 }
 .card-track img {
   min-width: 0;
@@ -1289,23 +1279,6 @@ svg {
 .card-indicator .active {
   background: var(--paper);
   box-shadow: 0 0 1px var(--ink);
-}
-.card-arrow {
-  display: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: var(--control);
-  height: var(--control);
-  place-items: center;
-  background: var(--paper);
-  border-radius: 50%;
-}
-.card-arrow-left { left: var(--space-1); }
-.card-arrow-right { right: var(--space-1); }
-@media (hover: hover) and (pointer: fine) {
-  .card-gallery:hover .card-arrow:enabled,
-  .card-gallery:focus-within .card-arrow:enabled { display: grid; }
 }
 .card-copy {
   padding-top: var(--space-2);
