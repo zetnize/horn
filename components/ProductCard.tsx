@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { formatPrice, formatShipping, type Product } from "@/data/products";
+import { formatPrice, formatShipping, PRODUCT_SIZES, type Product } from "@/data/products";
 import { Icon } from "./Icons";
 
 const placeholder = "/assets/product-placeholder.svg";
@@ -12,6 +12,7 @@ export function ProductCard({ product }: { product: Product }) {
   const track = useRef<HTMLAnchorElement>(null);
   const [active, setActive] = useState(0);
   const images = product.images.length ? product.images : [placeholder];
+  const sizes = PRODUCT_SIZES.filter((size) => product.sizes.includes(size));
   const href = `/product/${product.slug}`;
 
   function showPhoto(index: number) {
@@ -79,7 +80,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h3><Link href={href}>{product.name}</Link></h3>
         <p className="price">{formatPrice(product.price)}</p>
         <ul className="card-sizes" aria-label="Доступные размеры">
-          {product.sizes.map((size) => <li key={size}>{size}</li>)}
+          {sizes.map((size) => <li key={size}>{size}</li>)}
         </ul>
         <p className="card-shipping">{formatShipping(product)}</p>
       </div>
